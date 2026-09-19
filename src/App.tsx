@@ -1,152 +1,35 @@
 import { useState } from 'react'
-import {
-  Home, Compass, Sparkles, BriefcaseBusiness, Building2, ArrowRight,
-  TrendingUp, Workflow, Instagram, Calculator, Rocket, CircleHelp,
-  BookOpen, Bot, ChevronRight, Search, CheckCircle2, MessageCircle
-} from 'lucide-react'
+import { ArrowRight, BarChart3, BrainCircuit, BriefcaseBusiness, Building2, ChevronRight, CircleHelp, Instagram, Menu, MessageCircle, Rocket, Search, Sparkles, TrendingUp, Workflow, X } from 'lucide-react'
 
-type Page = 'inicio' | 'explorar' | 'nova' | 'solucoes' | 'negocio'
-
-const goals = [
-  { icon: TrendingUp, title: 'Quero vender mais', text: 'Encontre gargalos e próximos passos para transformar atenção em vendas.' },
-  { icon: Workflow, title: 'Quero organizar meu negócio', text: 'Processos, atendimento, clientes e rotina mais claros.' },
-  { icon: Instagram, title: 'Quero melhorar minhas redes', text: 'Posicionamento, conteúdo, consistência e conversão.' },
-  { icon: Calculator, title: 'Quero entender meus números', text: 'CMV, margem, preço e capital de giro em linguagem simples.' },
-  { icon: Rocket, title: 'Estou começando', text: 'Descubra o que realmente precisa agora — sem gastar à toa.' },
-  { icon: CircleHelp, title: 'Não sei do que preciso', text: 'A NOVA faz perguntas e ajuda a identificar o problema primeiro.' },
-]
-
-const explore = [
-  ['Marketing & Vendas', 'Descubra como atrair, converter e acompanhar clientes.'],
-  ['Redes Sociais', 'Instagram, conteúdo, posicionamento e presença digital.'],
-  ['Gestão & Processos', 'Organize o que hoje depende da memória e da correria.'],
-  ['Financeiro', 'Entenda custos, margem, CMV e capital de giro.'],
-  ['WhatsApp & Atendimento', 'Melhore conversas, organização e experiência do cliente.'],
-  ['Automação & IA', 'Use tecnologia quando ela realmente resolver um problema.'],
-]
-
-function InfinityMark({small=false}:{small?:boolean}) {
-  return <span className={small ? 'infinity small' : 'infinity'}>∞</span>
-}
-
-function Header() {
-  return <header>
-    <div className="brand">
-      <InfinityMark small />
-      <div><strong>inovapro</strong><span>SYSTEMS</span></div>
-    </div>
-    <button className="iconBtn" aria-label="Pesquisar"><Search size={20}/></button>
-  </header>
-}
-
-function HomePage({go}:{go:(p:Page)=>void}) {
-  return <>
-    <section className="hero">
-      <div className="eyebrow"><Sparkles size={15}/> Inteligência para negócios reais</div>
-      <h1>O que você quer <span>melhorar</span> no seu negócio?</h1>
-      <p>Você não precisa saber o nome da ferramenta. Comece pelo problema e a InovaPro ajuda a encontrar o próximo passo.</p>
-      <button className="primary" onClick={()=>go('nova')}>Conversar com a NOVA <ArrowRight size={18}/></button>
-      <div className="hero-orbit orbit-a"></div><div className="hero-orbit orbit-b"></div>
-    </section>
-
-    <section>
-      <div className="sectionHead"><div><span className="kicker">COMECE POR AQUI</span><h2>Qual situação parece com a sua?</h2></div></div>
-      <div className="goalGrid">
-        {goals.map(({icon:Icon,title,text})=><button className="goalCard" key={title} onClick={()=>go(title.includes('Não sei')?'nova':'explorar')}>
-          <span className="goalIcon"><Icon size={21}/></span><strong>{title}</strong><p>{text}</p><ChevronRight size={18} className="chev"/>
-        </button>)}
-      </div>
-    </section>
-
-    <section className="learnCard">
-      <div className="learnIcon"><BookOpen/></div>
-      <div><span className="kicker">APRENDA E APLIQUE</span><h3>Conhecimento que termina em ação</h3>
-      <p>Conteúdos curtos explicam o conceito. Depois você pode testar no seu próprio negócio com ferramentas e diagnósticos.</p></div>
-      <button onClick={()=>go('explorar')}>Explorar conteúdos <ArrowRight size={17}/></button>
-    </section>
-
-    <section className="novaBanner">
-      <InfinityMark/>
-      <div><span className="kicker">NOVA • ASSISTENTE ESTRATÉGICA</span><h3>Não sabe por onde começar?</h3>
-      <p>Conte o que está acontecendo. A NOVA procura entender antes de recomendar qualquer solução.</p></div>
-      <button onClick={()=>go('nova')}>Falar com a NOVA</button>
-    </section>
-  </>
-}
-
-function ExplorePage(){
-  return <section className="page">
-    <span className="kicker">EXPLORAR</span><h1>Encontre pelo <span>problema</span>, não pelo jargão.</h1>
-    <p className="lead">Escolha uma área ou descreva o que está acontecendo no seu negócio.</p>
-    <div className="searchBox"><Search size={19}/><span>Ex.: “vendo, mas não sobra dinheiro”</span></div>
-    <div className="listGrid">{explore.map(([t,d])=><article className="listCard" key={t}><div><h3>{t}</h3><p>{d}</p></div><ChevronRight/></article>)}</div>
-  </section>
-}
-
-function NovaPage(){
-  return <section className="page novaPage">
-    <div className="novaCore"><InfinityMark/><span>NOVA</span></div>
-    <span className="kicker">ENTENDER PRIMEIRO. RECOMENDAR DEPOIS.</span>
-    <h1>O que está acontecendo no seu negócio?</h1>
-    <div className="chat">
-      <div className="bubble novaBubble"><strong>NOVA</strong><p>Você não precisa saber se precisa de CRM, automação ou marketing. Me conte o problema do seu jeito. Eu começo por aí.</p></div>
-      <div className="quick">
-        <button>Estou vendendo pouco</button><button>Meu negócio está desorganizado</button>
-        <button>Quero melhorar meu Instagram</button><button>Não sei por onde começar</button>
-      </div>
-      <div className="inputFake"><span>Conte o que está acontecendo...</span><button><ArrowRight size={19}/></button></div>
-      <small>Interface demonstrativa • A integração de IA será conectada em uma próxima etapa.</small>
-    </div>
-  </section>
-}
-
-function SolutionsPage(){
-  return <section className="page">
-    <span className="kicker">SOLUÇÕES</span><h1>Da necessidade à <span>solução certa.</span></h1>
-    <p className="lead">Nem todo problema precisa de um projeto grande. A solução deve ser proporcional ao momento do negócio.</p>
-    <div className="steps">
-      <div><b>01</b><span>Entender</span><p>O problema vem antes da ferramenta.</p></div>
-      <div><b>02</b><span>Diagnosticar</span><p>Dados e contexto ajudam a separar sintoma de causa.</p></div>
-      <div><b>03</b><span>Resolver</span><p>Orientação, solução expressa ou projeto profissional.</p></div>
-    </div>
-    <div className="solutionCard"><div><span className="pill">COMEÇANDO</span><h3>InovaPro Express</h3><p>Soluções menores, objetivas e acessíveis para necessidades específicas.</p></div><ArrowRight/></div>
-    <div className="solutionCard"><div><span className="pill">CRESCIMENTO</span><h3>Soluções profissionais</h3><p>Estratégia e execução para desafios que exigem mais profundidade.</p></div><ArrowRight/></div>
-    <div className="solutionCard"><div><span className="pill">PERSONALIZADO</span><h3>Projetos integrados</h3><p>Processos, automação, IA e tecnologia trabalhando em conjunto.</p></div><ArrowRight/></div>
-  </section>
-}
-
-function BusinessPage(){
-  return <section className="page">
-    <span className="kicker">MEU NEGÓCIO</span><h1>Seu negócio, visto como um <span>sistema.</span></h1>
-    <p className="lead">Conforme você usa diagnósticos e projetos, esta área passa a reunir contexto, evolução e próximos passos.</p>
-    <div className="xray">
-      <div className="xrayHead"><div><h3>Raio-X do meu negócio</h3><p>Visão inicial das áreas analisadas.</p></div><Building2/></div>
-      {['Marketing','Vendas','Financeiro','Atendimento','Processos','Presença digital'].map((x,i)=>
-        <div className="status" key={x}><span>{x}</span><span className={i<2?'done':i===2?'attention':'pending'}>{i<2?<><CheckCircle2 size={15}/> Analisado</>:i===2?'Atenção':'Não analisado'}</span></div>
-      )}
-    </div>
-    <div className="emptyProject"><BriefcaseBusiness/><h3>Seus projetos aparecerão aqui</h3><p>Compra, onboarding, arquivos, etapas, aprovações e entregas ficarão organizados em um só lugar.</p></div>
-  </section>
-}
-
-const nav = [
-  ['inicio','Início',Home],['explorar','Explorar',Compass],['nova','NOVA',Bot],['solucoes','Soluções',BriefcaseBusiness],['negocio','Meu Negócio',Building2]
+type Section='inicio'|'solucoes'|'conteudos'|'quem-somos'|'faq'
+const services=[
+ [Instagram,'Redes sociais e presença digital','Posicionamento, conteúdo e presença digital com propósito.'],
+ [TrendingUp,'Marketing e vendas','Estratégias para atrair, atender e transformar oportunidades em clientes.'],
+ [Workflow,'Gestão e processos','Mais clareza, organização e eficiência para a rotina do negócio.'],
+ [BrainCircuit,'IA e automação','Tecnologia aplicada quando ela realmente resolve um problema.'],
+ [MessageCircle,'WhatsApp e atendimento','Organização da comunicação e da experiência do cliente.'],
+ [BarChart3,'Indicadores do negócio','Ferramentas para entender custos, margem, CMV e outros números importantes.'],
 ] as const
-
-export default function App(){
-  const [page,setPage]=useState<Page>('inicio')
-  return <div className="app">
-    <Header/>
-    <main>
-      {page==='inicio'&&<HomePage go={setPage}/>}
-      {page==='explorar'&&<ExplorePage/>}
-      {page==='nova'&&<NovaPage/>}
-      {page==='solucoes'&&<SolutionsPage/>}
-      {page==='negocio'&&<BusinessPage/>}
-    </main>
-    {page!=='nova'&&<button className="floatingNova" onClick={()=>setPage('nova')} aria-label="Falar com a NOVA"><InfinityMark small/><span>Quer entender isso melhor?</span></button>}
-    <nav>{nav.map(([id,label,Icon])=><button key={id} className={page===id?'active':''} onClick={()=>setPage(id as Page)}>
-      <span className={id==='nova'?'novaNav':''}>{id==='nova'?<InfinityMark small/>:<Icon size={20}/>}</span><small>{label}</small>
-    </button>)}</nav>
-  </div>
+const faqs=[
+ ['A InovaPro atende apenas empresas grandes?','Não. A proposta é atender desde quem está começando a empreender até negócios mais estruturados, considerando o momento e a necessidade real de cada negócio.'],
+ ['Preciso saber qual serviço contratar?','Não. Você pode começar explicando o problema. A NOVA foi pensada para ajudar a organizar o contexto antes de recomendar um próximo passo.'],
+ ['A NOVA substitui o atendimento humano?','Não. A NOVA apoia diagnóstico, orientação e organização. Quando necessário, o atendimento pode ser encaminhado com o contexto já reunido.'],
+ ['Tudo no aplicativo já está funcionando?','Esta é uma versão em desenvolvimento. Recursos ainda não conectados são apresentados como demonstração.'],
+] as const
+function InfinityMark(){return <span className="infinity">∞</span>}
+function Brand(){return <div className="brand"><InfinityMark/><div><strong>inovapro</strong><span>SYSTEMS</span><small>Conectando você ao mundo.</small></div></div>}
+function Header({section,setSection,auth}:{section:Section,setSection:(x:Section)=>void,auth:(x:'login'|'signup')=>void}){
+ const [open,setOpen]=useState(false)
+ const nav=(id:Section,label:string)=><button className={section===id?'active':''} onClick={()=>{setSection(id);setOpen(false);scrollTo(0,0)}}>{label}</button>
+ return <header><button className="brandBtn" onClick={()=>setSection('inicio')}><Brand/></button><div className="desktop">{nav('inicio','Início')}{nav('solucoes','Soluções')}{nav('conteudos','Conteúdos')}{nav('quem-somos','Quem somos')}{nav('faq','FAQ')}</div><div className="actions"><button className="login" onClick={()=>auth('login')}>Iniciar sessão</button><button className="create desktopCreate" onClick={()=>auth('signup')}>Criar conta</button><button className="menu" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>{open&&<div className="mobile">{nav('inicio','Início')}{nav('solucoes','Soluções')}{nav('conteudos','Conteúdos')}{nav('quem-somos','Quem somos')}{nav('faq','FAQ')}<button className="create" onClick={()=>auth('signup')}>Criar conta</button></div>}</header>
 }
+function Home({setSection,auth}:{setSection:(x:Section)=>void,auth:(x:'signup')=>void}){
+ return <><section className="hero"><div><span className="tag"><Sparkles/> ESTRATÉGIA • DIGITAL • TECNOLOGIA</span><h1>Seu negócio conectado a <em>novas possibilidades.</em></h1><p>A InovaPro Systems conecta estratégia, comunicação, marketing, gestão e tecnologia para ajudar negócios a entender problemas, encontrar oportunidades e evoluir com mais clareza.</p><div className="buttons"><button className="primary" onClick={()=>auth('signup')}>Conversar com a NOVA <ArrowRight/></button><button className="secondary" onClick={()=>setSection('solucoes')}>Conhecer soluções</button></div><small className="slogan">Conectando você ao mundo.</small></div><div className="nova"><InfinityMark/><strong>NOVA</strong><span>Assistente estratégica da InovaPro</span><p>Conte o que está acontecendo. Eu começo pelo problema.</p></div></section><section className="what"><span className="tag">O QUE FAZEMOS</span><h2>Um ecossistema para diferentes momentos do negócio.</h2><p>Da presença nas redes sociais à organização de processos, automação e inteligência artificial. A tecnologia entra como meio — não como ponto de partida.</p><div className="strip">{services.slice(0,4).map(([I,t])=><article key={t}><I/><strong>{t}</strong></article>)}</div><button className="link" onClick={()=>setSection('solucoes')}>Ver todas as áreas <ArrowRight/></button></section><section className="novaIntro"><div className="novaMark"><InfinityMark/></div><div><span className="tag">CONHEÇA A NOVA</span><h2>Você não precisa chegar sabendo o nome da solução.</h2><p>A NOVA foi criada para entender o contexto primeiro. Em vez de começar oferecendo uma ferramenta, ela ajuda a identificar o que realmente precisa de atenção e qual pode ser o próximo passo.</p><button className="secondary" onClick={()=>auth('signup')}>Falar com a NOVA</button></div></section></>
+}
+function Solutions(){return <section className="page"><span className="tag">SOLUÇÕES</span><h1>O problema vem antes da <em>ferramenta.</em></h1><p className="lead">A InovaPro reúne diferentes competências para construir uma resposta proporcional à necessidade e ao momento de cada negócio.</p><div className="grid">{services.map(([I,t,d])=><article key={t}><I/><h3>{t}</h3><p>{d}</p></article>)}</div></section>}
+function Contents(){return <section className="page"><span className="tag">CONTEÚDOS</span><h1>Aprender para <em>decidir melhor.</em></h1><p className="lead">Conteúdos objetivos para traduzir gestão, marketing, vendas e tecnologia para a realidade do negócio.</p><div className="grid"><article><h3>CRM: eu realmente preciso de um?</h3><p>Entenda quando um CRM ajuda e quando ele só adiciona complexidade.</p></article><article><h3>Instagram bonito vende?</h3><p>A diferença entre estética, posicionamento, conteúdo e conversão.</p></article><article><h3>CMV sem complicação</h3><p>Por que vender bastante não significa necessariamente ter lucro.</p></article></div><small className="notice">Biblioteca em desenvolvimento.</small></section>}
+function About(){return <section className="page"><span className="tag">QUEM SOMOS</span><h1>Estratégia e tecnologia com <em>propósito.</em></h1><p className="lead">A InovaPro Systems é uma empresa de soluções estratégicas, digitais, comerciais e tecnológicas. O trabalho parte da compreensão do negócio e do problema antes da escolha de ferramentas.</p><div className="principle"><InfinityMark/><div><span className="tag">PRINCÍPIO</span><h2>Entender primeiro.<br/>Recomendar depois.</h2><p>Comunicação, presença digital, vendas, atendimento, gestão, processos, automação e inteligência artificial podem trabalhar de forma conectada.</p></div></div></section>}
+function FAQ(){const [o,setO]=useState(0);return <section className="page"><span className="tag">FAQ</span><h1>Perguntas <em>frequentes.</em></h1><div className="faq">{faqs.map(([q,a],i)=><button key={q} onClick={()=>setO(o===i?-1:i)}><strong>{q}<b>{o===i?'−':'+'}</b></strong>{o===i&&<p>{a}</p>}</button>)}</div></section>}
+function Auth({mode,close,enter}:{mode:'login'|'signup',close:()=>void,enter:()=>void}){return <div className="back" onClick={close}><div className="modal" onClick={e=>e.stopPropagation()}><button className="x" onClick={close}><X/></button><Brand/><span className="tag">{mode==='login'?'INICIAR SESSÃO':'CRIAR CONTA'}</span><h2>{mode==='login'?'Bem-vindo de volta.':'Comece sua jornada na InovaPro.'}</h2>{mode==='signup'&&<input placeholder="Nome"/>}<input placeholder="E-mail"/>{mode==='signup'&&<input placeholder="Celular / WhatsApp"/>}<input placeholder="Senha" type="password"/><button className="primary full" onClick={enter}>{mode==='login'?'Entrar':'Criar conta'} <ArrowRight/></button><small className="notice">Demonstração: autenticação real ainda não conectada.</small></div></div>}
+function DemoApp({exit}:{exit:()=>void}){return <div className="demo"><header><Brand/><button className="login" onClick={exit}>Sair</button></header><main><span className="tag">INÍCIO</span><h1>O que você quer <em>melhorar</em> no seu negócio?</h1><p className="lead">Comece pela situação. Você não precisa saber qual ferramenta procurar.</p><div className="goals">{[[TrendingUp,'Quero vender mais'],[Workflow,'Quero organizar meu negócio'],[Instagram,'Quero melhorar minhas redes'],[BarChart3,'Quero entender meus números'],[Rocket,'Estou começando'],[CircleHelp,'Não sei do que preciso']].map(([I,t]:any)=><button key={t}><I/><strong>{t}</strong><ChevronRight/></button>)}</div><div className="demoNova"><InfinityMark/><div><span className="tag">NOVA</span><h2>Não sabe por onde começar?</h2><p>Conte o que está acontecendo. A NOVA começa pelo problema.</p></div></div></main></div>}
+export default function App(){const [section,setSection]=useState<Section>('inicio');const [auth,setAuth]=useState<null|'login'|'signup'>(null);const [inside,setInside]=useState(false);if(inside)return <DemoApp exit={()=>setInside(false)}/>;return <div><Header section={section} setSection={setSection} auth={setAuth}/><main className="main">{section==='inicio'&&<Home setSection={setSection} auth={setAuth}/>} {section==='solucoes'&&<Solutions/>}{section==='conteudos'&&<Contents/>}{section==='quem-somos'&&<About/>}{section==='faq'&&<FAQ/>}</main><footer><Brand/><small>© 2026 InovaPro Systems.</small></footer>{auth&&<Auth mode={auth} close={()=>setAuth(null)} enter={()=>{setAuth(null);setInside(true)}}/>}</div>}
