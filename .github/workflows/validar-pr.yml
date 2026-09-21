@@ -1,0 +1,44 @@
+name: Validar Pull Request
+
+on:
+  pull_request:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validar-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validar:
+    name: Tipos, build e segredos
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Baixar projeto
+        uses: actions/checkout@v7
+
+      - name: Configurar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Verificar tipos
+        run: npx tsc --noEmit
+
+      - name: Construir aplicativo
+        run: npm run build
+
+      - name: Conferir que o build gerou saida
+        run: test -f dist/index.html
+
+      - name: Barrar segredos e artefatos versionados
+        run: bash .github/scripts/verificar-segredos.sh
