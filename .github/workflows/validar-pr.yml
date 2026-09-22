@@ -2,7 +2,7 @@ name: Validar Pull Request
 
 on:
   pull_request:
-    branches: ["main"]
+    branches: ['main']
   workflow_dispatch:
 
 permissions:
@@ -34,8 +34,18 @@ jobs:
       - name: Verificar tipos
         run: npx tsc --noEmit
 
+      - name: Verificar lint
+        run: npm run lint
+
+      - name: Executar testes
+        run: npm test
+
       - name: Construir aplicativo
         run: npm run build
+        env:
+          VITE_APP_URL: https://renatometalrenato-netizen.github.io/InovaPro.app/
+          VITE_SUPABASE_URL: https://tygksrzhqqjsltmycvxp.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_8LFlbAZtz6pvbChWFWR8zw_PX4HrIdp
 
       - name: Conferir que o build gerou saida
         run: test -f dist/index.html
