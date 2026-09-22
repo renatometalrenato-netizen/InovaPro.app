@@ -1,0 +1,23 @@
+export type PublicEnv = {
+  VITE_APP_URL?: string
+  VITE_SUPABASE_URL?: string
+  VITE_SUPABASE_PUBLISHABLE_KEY?: string
+}
+
+export function getPublicConfig(env: PublicEnv) {
+  const appUrl = env.VITE_APP_URL?.trim()
+  const supabaseUrl = env.VITE_SUPABASE_URL?.trim()
+  const supabasePublishableKey = env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim()
+
+  if (!appUrl || !supabaseUrl || !supabasePublishableKey) {
+    throw new Error('Configuração pública do aplicativo incompleta.')
+  }
+
+  return { appUrl, supabaseUrl, supabasePublishableKey }
+}
+
+export const publicConfig = getPublicConfig({
+  VITE_APP_URL: import.meta.env.VITE_APP_URL,
+  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
+  VITE_SUPABASE_PUBLISHABLE_KEY: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+})
