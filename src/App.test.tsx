@@ -3,12 +3,19 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
 
+type AuthChange = (event: string, session: { user: { id: string; email?: string } } | null) => void
+
 const auth = vi.hoisted(() => ({
   getSession: vi.fn(),
   signInWithPassword: vi.fn(),
   signUp: vi.fn(),
+  resetPasswordForEmail: vi.fn(),
+  updateUser: vi.fn(),
   signOut: vi.fn(),
-  onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+  onAuthStateChange: vi.fn((callback?: AuthChange) => {
+    void callback
+    return { data: { subscription: { unsubscribe: vi.fn() } } }
+  }),
 }))
 vi.mock('./supabase', () => ({ supabase: { auth } }))
 vi.mock('./config', () => ({
@@ -70,6 +77,52 @@ describe('App', () => {
     await userEvent.type(screen.getByLabelText('Senha'), 'segredo123')
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
     expect(await screen.findByRole('alert')).toHaveTextContent('Credenciais inválidas')
+  })
+  it('envia recuperação de senha sem revelar se a conta existe', async () => {
+    auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
+    auth.resetPasswordForEmail.mockResolvedValue({ data: {}, error: null })
+    render(<App />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Iniciar sessão' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Esqueci minha senha' }))
+    await userEvent.type(screen.getByLabelText('E-mail'), 'pessoa@example.com')
+    await userEvent.click(screen.getByRole('button', { name: 'Enviar instruções' }))
+    await waitFor(() => expect(auth.resetPasswordForEmail).toHaveBeenCalled())
+    expect(auth.resetPasswordForEmail).toHaveBeenCalledWith('pessoa@example.com', {
+      redirectTo: 'http://localhost:5173/',
+    })
+    expect(screen.getByRole('status')).toHaveTextContent('Se existir uma conta')
+  })
+  it('permite definir uma nova senha após o evento de recuperação', async () => {
+    auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
+    auth.updateUser.mockResolvedValue({ data: {}, error: null })
+    auth.onAuthStateChange.mockImplementation((callback?: AuthChange) => {
+      callback?.('PASSWORD_RECOVERY', {
+        user: { id: '1', email: 'pessoa@example.com' },
+      })
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    render(<App />)
+    expect(await screen.findByRole('heading', { name: 'Crie uma nova senha.' })).toBeInTheDocument()
+    await userEvent.type(screen.getByLabelText('Nova senha'), 'novaSenha123')
+    await userEvent.type(screen.getByLabelText('Confirmar nova senha'), 'novaSenha123')
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar nova senha' }))
+    await waitFor(() => expect(auth.updateUser).toHaveBeenCalledWith({ password: 'novaSenha123' }))
+  })
+  it('impede a troca quando as novas senhas são diferentes', async () => {
+    auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
+    auth.onAuthStateChange.mockImplementation((callback?: AuthChange) => {
+      callback?.('PASSWORD_RECOVERY', {
+        user: { id: '1', email: 'pessoa@example.com' },
+      })
+      return { data: { subscription: { unsubscribe: vi.fn() } } }
+    })
+    render(<App />)
+    await screen.findByRole('heading', { name: 'Crie uma nova senha.' })
+    await userEvent.type(screen.getByLabelText('Nova senha'), 'novaSenha123')
+    await userEvent.type(screen.getByLabelText('Confirmar nova senha'), 'outraSenha123')
+    await userEvent.click(screen.getByRole('button', { name: 'Salvar nova senha' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('As senhas não coincidem.')
+    expect(auth.updateUser).not.toHaveBeenCalled()
   })
   it('envia cadastro com metadados e redirect configurado', async () => {
     auth.getSession.mockResolvedValue({ data: { session: null }, error: null })

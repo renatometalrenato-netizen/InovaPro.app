@@ -435,6 +435,19 @@ footer > small {
   width: 100%;
   margin-top: 9px;
 }
+.authLink {
+  width: 100%;
+  margin-top: 10px;
+  border: 0;
+  background: transparent;
+  color: #79dcff;
+  font-size: 12px;
+}
+.authLink:hover,
+.authLink:focus-visible {
+  color: #fff;
+  text-decoration: underline;
+}
 .demo {
   max-width: 820px;
   margin: auto;

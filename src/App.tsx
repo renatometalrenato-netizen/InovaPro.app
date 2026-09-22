@@ -19,7 +19,7 @@ import { supabase } from './supabase'
 import { publicConfig } from './config'
 
 type Section = 'inicio' | 'solucoes' | 'conteudos' | 'quem-somos' | 'faq'
-type AuthMode = 'login' | 'signup'
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'update-password'
 type SessionUser = { id: string; email?: string }
 const services = [
   [
@@ -400,13 +400,22 @@ function FAQ() {
   )
 }
 
-function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
+function Auth({
+  mode,
+  close,
+  changeMode,
+}: {
+  mode: AuthMode
+  close: () => void
+  changeMode: (mode: AuthMode) => void
+}) {
   const modalRef = useRef<HTMLFormElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [passwordConfirmation, setPasswordConfirmation] = useState('')
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -461,8 +470,24 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
           setMessage(
             'Conta criada. Enviamos um link de confirmação para o seu e-mail. Confirme o endereço antes de entrar.',
           )
-      } else {
+      } else if (mode === 'login') {
         const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password })
+        if (error) throw error
+        close()
+      } else if (mode === 'forgot-password') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+          redirectTo: publicConfig.appUrl,
+        })
+        if (error) throw error
+        setMessage(
+          'Se existir uma conta com esse e-mail, enviaremos as instruções para criar uma nova senha.',
+        )
+      } else {
+        if (password !== passwordConfirmation) {
+          setError('As senhas não coincidem.')
+          return
+        }
+        const { error } = await supabase.auth.updateUser({ password })
         if (error) throw error
         close()
       }
@@ -492,9 +517,23 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
           <X aria-hidden="true" />
         </button>
         <Brand />
-        <span className="tag">{mode === 'login' ? 'INICIAR SESSÃO' : 'CRIAR CONTA'}</span>
+        <span className="tag">
+          {mode === 'login'
+            ? 'INICIAR SESSÃO'
+            : mode === 'signup'
+              ? 'CRIAR CONTA'
+              : mode === 'forgot-password'
+                ? 'RECUPERAR ACESSO'
+                : 'NOVA SENHA'}
+        </span>
         <h2 id="auth-title">
-          {mode === 'login' ? 'Bem-vindo de volta.' : 'Comece sua jornada na InovaPro.'}
+          {mode === 'login'
+            ? 'Bem-vindo de volta.'
+            : mode === 'signup'
+              ? 'Comece sua jornada na InovaPro.'
+              : mode === 'forgot-password'
+                ? 'Recupere seu acesso.'
+                : 'Crie uma nova senha.'}
         </h2>
         {mode === 'signup' && (
           <input
@@ -506,15 +545,17 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
             required
           />
         )}
-        <input
-          aria-label="E-mail"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="E-mail"
-          type="email"
-          autoComplete="email"
-          required
-        />
+        {mode !== 'update-password' && (
+          <input
+            aria-label="E-mail"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="E-mail"
+            type="email"
+            autoComplete="email"
+            required
+          />
+        )}
         {mode === 'signup' && (
           <input
             aria-label="Celular ou WhatsApp"
@@ -526,16 +567,30 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
             required
           />
         )}
-        <input
-          aria-label="Senha"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          placeholder="Senha"
-          type="password"
-          autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-          minLength={6}
-          required
-        />
+        {mode !== 'forgot-password' && (
+          <input
+            aria-label={mode === 'update-password' ? 'Nova senha' : 'Senha'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder={mode === 'update-password' ? 'Nova senha' : 'Senha'}
+            type="password"
+            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+            minLength={6}
+            required
+          />
+        )}
+        {mode === 'update-password' && (
+          <input
+            aria-label="Confirmar nova senha"
+            value={passwordConfirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            placeholder="Confirmar nova senha"
+            type="password"
+            autoComplete="new-password"
+            minLength={6}
+            required
+          />
+        )}
         {error && (
           <p className="authError" role="alert">
             {error}
@@ -547,9 +602,22 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
           </p>
         )}
         <button className="primary full" disabled={loading}>
-          {loading ? 'Aguarde...' : mode === 'login' ? 'Entrar' : 'Criar conta'}{' '}
+          {loading
+            ? 'Aguarde...'
+            : mode === 'login'
+              ? 'Entrar'
+              : mode === 'signup'
+                ? 'Criar conta'
+                : mode === 'forgot-password'
+                  ? 'Enviar instruções'
+                  : 'Salvar nova senha'}{' '}
           {!loading && <ArrowRight aria-hidden="true" />}
         </button>
+        {mode === 'login' && (
+          <button type="button" className="authLink" onClick={() => changeMode('forgot-password')}>
+            Esqueci minha senha
+          </button>
+        )}
         {mode === 'signup' && (
           <small className="authLegal">
             Ao criar a conta, seus dados serão usados para autenticação e funcionamento do
@@ -644,7 +712,8 @@ function WebsiteApp() {
     })()
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') setAuth('update-password')
       const u = session?.user
       setUser(u ? { id: u.id, email: u.email } : null)
     })
@@ -675,7 +744,7 @@ function WebsiteApp() {
         </button>
       </div>
     )
-  if (user) return <DemoApp user={user} exit={exit} />
+  if (user && auth !== 'update-password') return <DemoApp user={user} exit={exit} />
   return (
     <div>
       <Header section={section} setSection={setSection} auth={setAuth} />
@@ -693,7 +762,7 @@ function WebsiteApp() {
           <small>© 2026 InovaPro Systems.</small>
         </div>
       </footer>
-      {auth && <Auth mode={auth} close={() => setAuth(null)} />}
+      {auth && <Auth mode={auth} close={() => setAuth(null)} changeMode={setAuth} />}
     </div>
   )
 }
