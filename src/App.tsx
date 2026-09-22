@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { supabase } from './supabase'
 import { publicConfig } from './config'
+import { WhatsAppConnect } from './WhatsAppConnect'
 
 type Section = 'inicio' | 'solucoes' | 'conteudos' | 'quem-somos' | 'faq'
 type AuthMode = 'login' | 'signup'
@@ -590,6 +591,7 @@ function DemoApp({ user, exit }: { user: SessionUser; exit: () => void }) {
           Sua sessão está conectada ao Supabase. Agora podemos evoluir o perfil e o Meu Negócio
           sobre esta base.
         </p>
+        <WhatsAppConnect />
         <div className="goals">
           {goals.map(([I, t]) => (
             <button key={t}>
