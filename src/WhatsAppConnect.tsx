@@ -28,7 +28,9 @@ declare global {
 type ConnectState = 'idle' | 'loading-sdk' | 'ready' | 'connecting' | 'connected' | 'error'
 
 export function WhatsAppConnect() {
-  const [state, setState] = useState<ConnectState>('idle')
+  const [state, setState] = useState<ConnectState>(() =>
+    publicConfig.metaAppId && publicConfig.metaWhatsAppConfigId ? 'loading-sdk' : 'idle',
+  )
   const [message, setMessage] = useState('')
   const sessionInfoRef = useRef<Record<string, unknown>>({})
   const pendingCodeRef = useRef<string | null>(null)
@@ -37,6 +39,39 @@ export function WhatsAppConnect() {
   const appId = publicConfig.metaAppId
   const configId = publicConfig.metaWhatsAppConfigId
   const configured = Boolean(appId && configId)
+
+  async function completeConnection(code: string) {
+    if (completingRef.current) return
+    completingRef.current = true
+    setState('connecting')
+    setMessage('Finalizando a conexão segura com a Meta...')
+
+    try {
+      const { data, error } = await supabase.functions.invoke('nova-whatsapp-onboarding', {
+        body: {
+          code,
+          sessionInfo: sessionInfoRef.current,
+        },
+      })
+      if (error) throw error
+      if (!data?.ok) throw new Error(data?.error || 'A Meta não concluiu a conexão.')
+
+      setState('connected')
+      const phone = data?.phone ? ` (${data.phone})` : ''
+      setMessage(`WhatsApp Business conectado à Nova AI${phone}.`)
+    } catch (error) {
+      setState('error')
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : 'Não foi possível concluir a conexão com o WhatsApp.',
+      )
+    } finally {
+      completingRef.current = false
+      pendingCodeRef.current = null
+    }
+  }
+
 
   useEffect(() => {
     if (!configured || !appId) return
@@ -56,9 +91,8 @@ export function WhatsAppConnect() {
         xfbml: false,
         version: 'v25.0',
       })
-      markReady()
+      window.setTimeout(markReady, 0)
     } else {
-      setState('loading-sdk')
       window.fbAsyncInit = () => {
         window.FB?.init({
           appId,
@@ -134,37 +168,6 @@ export function WhatsAppConnect() {
     }
   }, [appId, configured])
 
-  async function completeConnection(code: string) {
-    if (completingRef.current) return
-    completingRef.current = true
-    setState('connecting')
-    setMessage('Finalizando a conexão segura com a Meta...')
-
-    try {
-      const { data, error } = await supabase.functions.invoke('nova-whatsapp-onboarding', {
-        body: {
-          code,
-          sessionInfo: sessionInfoRef.current,
-        },
-      })
-      if (error) throw error
-      if (!data?.ok) throw new Error(data?.error || 'A Meta não concluiu a conexão.')
-
-      setState('connected')
-      const phone = data?.phone ? ` (${data.phone})` : ''
-      setMessage(`WhatsApp Business conectado à Nova AI${phone}.`)
-    } catch (error) {
-      setState('error')
-      setMessage(
-        error instanceof Error
-          ? error.message
-          : 'Não foi possível concluir a conexão com o WhatsApp.',
-      )
-    } finally {
-      completingRef.current = false
-      pendingCodeRef.current = null
-    }
-  }
 
   function connect() {
     if (!configured || !appId || !configId) {
