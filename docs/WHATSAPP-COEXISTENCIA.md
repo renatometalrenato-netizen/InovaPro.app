@@ -32,7 +32,7 @@ Nunca versionar ou registrar em documentação:
 - Meta App Secret;
 - Access Token;
 - System User Token;
-- service_role;
+- chave administrativa do backend;
 - segredos de ambiente.
 
 ## Supabase
