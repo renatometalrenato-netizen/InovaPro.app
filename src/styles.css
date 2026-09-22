@@ -695,3 +695,133 @@ footer > small {
   text-decoration: none;
   margin-top: 15px;
 }
+
+
+.whatsappConnect {
+  margin: 28px 0 8px;
+  border: 1px solid rgba(37, 211, 102, 0.2);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 10% 0%, rgba(37, 211, 102, 0.09), transparent 34%),
+    #091829;
+  padding: 22px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.whatsappConnectIcon {
+  width: 54px;
+  height: 54px;
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  background: rgba(37, 211, 102, 0.1);
+  border: 1px solid rgba(37, 211, 102, 0.18);
+}
+
+.whatsappConnectIcon svg {
+  width: 27px;
+  height: 27px;
+}
+
+.whatsappConnectBody h2 {
+  margin: 6px 0 8px;
+  font-size: 21px;
+}
+
+.whatsappConnectBody > p {
+  margin: 0;
+  color: #91a6bd;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.whatsappConnectNotice,
+.whatsappConnectStatus,
+.whatsappConnectError {
+  margin-top: 13px !important;
+  padding: 10px 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.whatsappConnectNotice {
+  background: rgba(255, 196, 64, 0.07);
+  border: 1px solid rgba(255, 196, 64, 0.18);
+  color: #e9c878 !important;
+}
+
+.whatsappConnectStatus {
+  background: rgba(55, 220, 170, 0.08);
+  border: 1px solid rgba(55, 220, 170, 0.2);
+  color: #8cebc9 !important;
+}
+
+.whatsappConnectError {
+  background: rgba(255, 90, 110, 0.09);
+  border: 1px solid rgba(255, 90, 110, 0.22);
+  color: #ff9eab !important;
+}
+
+.whatsappConnectStatus svg,
+.whatsappConnectError svg {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+}
+
+.whatsappConnectActions {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.whatsappConnectActions > span {
+  color: #70879f;
+  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.whatsappConnectActions > span svg {
+  width: 15px;
+  height: 15px;
+}
+
+.spin {
+  animation: nova-spin 0.9s linear infinite;
+}
+
+@keyframes nova-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .whatsappConnect {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .whatsappConnectIcon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .whatsappConnectActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .whatsappConnectActions .primary {
+    width: 100%;
+  }
+}
