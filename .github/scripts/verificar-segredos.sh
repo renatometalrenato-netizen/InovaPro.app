@@ -15,6 +15,9 @@ reprovar() {
 # 1. Arquivos que nunca devem ser versionados
 while IFS= read -r f; do
   case "$f" in
+    .env.example|*/.env.example)
+      # Template documentado, sem credenciais reais.
+      ;;
     .env|.env.*|*/.env|*/.env.*)
       reprovar "Arquivo de ambiente versionado: $f" ;;
     *.zip|*.tar|*.tar.gz|*.tgz|*.rar|*.7z)
