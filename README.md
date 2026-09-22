@@ -14,9 +14,10 @@ npm run dev
 ```
 
 ## V1
+
 - Home orientada por problemas
 - Explorar
-- Interface da NOVA
+- Interface da Nova AI
 - Soluções
 - Meu Negócio
 - Identidade visual InovaPro
