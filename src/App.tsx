@@ -432,27 +432,6 @@ function PasswordRecovery({ close }: { close: () => void }) {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
-  async function requestPasswordReset() {
-    setMessage('')
-    setError('')
-    if (!email.trim()) {
-      setError('Informe seu e-mail para receber o link de recuperação.')
-      return
-    }
-    setLoading(true)
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: publicConfig.appUrl,
-      })
-      if (error) throw error
-      setMessage('Se este e-mail estiver cadastrado, você receberá um link para redefinir a senha.')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Não foi possível solicitar a recuperação.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   async function submit(e: FormEvent) {
     e.preventDefault()
     setError('')
@@ -595,6 +574,27 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
       if (error) throw error
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Não foi possível entrar com o Google.')
+      setLoading(false)
+    }
+  }
+
+  async function requestPasswordReset() {
+    setMessage('')
+    setError('')
+    if (!email.trim()) {
+      setError('Informe seu e-mail para receber o link de recuperação.')
+      return
+    }
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: publicConfig.appUrl,
+      })
+      if (error) throw error
+      setMessage('Se este e-mail estiver cadastrado, você receberá um link para redefinir a senha.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível solicitar a recuperação.')
+    } finally {
       setLoading(false)
     }
   }
