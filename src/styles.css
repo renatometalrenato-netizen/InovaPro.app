@@ -738,3 +738,306 @@ footer > small {
   text-decoration: none;
   margin-top: 15px;
 }
+
+
+/* Authenticated InovaPro workspace */
+.appShell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(155, 92, 255, 0.12), transparent 26%),
+    radial-gradient(circle at 10% 20%, rgba(32, 216, 255, 0.08), transparent 24%),
+    #050d19;
+}
+.appHeader {
+  position: sticky;
+  top: 0;
+}
+.appBrand {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+.appBrand > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.appBrand strong {
+  font-size: 18px;
+  background: var(--grad);
+  background-clip: text;
+  color: transparent;
+}
+.appBrand span:not(.infinity) {
+  color: #8296aa;
+  font-size: 8px;
+  letter-spacing: 3px;
+}
+.accountHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(101, 221, 255, 0.2);
+}
+.avatarFallback {
+  display: grid;
+  place-items: center;
+  background: #0d2035;
+  color: #dff8ff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.accountIdentity {
+  display: flex;
+  flex-direction: column;
+  max-width: 220px;
+}
+.accountIdentity strong {
+  font-size: 11px;
+  color: #edf6ff;
+}
+.accountIdentity small {
+  color: #7389a0;
+  font-size: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dashboard {
+  max-width: 1180px;
+  margin: auto;
+  padding: 26px 20px 70px;
+}
+.appNav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 28px;
+}
+.appNav button {
+  border: 1px solid var(--line);
+  background: #081727;
+  color: #8198af;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 10px;
+  font-weight: 800;
+}
+.appNav button.active {
+  color: #eef5ff;
+  border-color: rgba(101, 221, 255, 0.26);
+  box-shadow: inset 0 0 0 1px rgba(101, 221, 255, 0.04);
+}
+.dashboardHero {
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: linear-gradient(135deg, rgba(9, 24, 41, 0.98), rgba(8, 18, 33, 0.98));
+  padding: 30px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 25px;
+}
+.dashboardHero h1,
+.accountPanel h1 {
+  font-size: clamp(30px, 5vw, 50px);
+  letter-spacing: -1.8px;
+  margin: 10px 0;
+}
+.dashboardHero p,
+.panelIntro p {
+  color: #8fa4b9;
+  line-height: 1.7;
+  margin: 0;
+}
+.dashboardHero strong {
+  color: #e8f8ff;
+}
+.dashboardGrid {
+  margin-top: 15px;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 14px;
+}
+.dashboardGrid article,
+.accountPanel {
+  border: 1px solid var(--line);
+  background: #081727;
+  border-radius: 24px;
+}
+.businessSummary,
+.novaCard,
+.nextStepCard {
+  padding: 24px;
+}
+.businessSummary h2,
+.novaCard h2,
+.nextStepCard h2 {
+  margin: 9px 0 12px;
+}
+.businessSummary dl {
+  display: grid;
+  gap: 10px;
+  margin: 20px 0;
+}
+.businessSummary dl > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 9px;
+}
+.businessSummary dt {
+  color: #6f879e;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.businessSummary dd {
+  margin: 0;
+  color: #d7e5f3;
+  font-size: 11px;
+}
+.novaCard {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  background:
+    radial-gradient(circle at 12% 30%, rgba(155, 92, 255, 0.14), transparent 25%),
+    #081727 !important;
+}
+.novaCard .infinity {
+  font-size: 72px;
+}
+.novaCard p,
+.nextStepCard p {
+  color: #849bb2;
+  line-height: 1.65;
+  font-size: 11px;
+}
+.nextStepCard {
+  grid-column: 1 / -1;
+}
+.nextStepCard > svg {
+  color: #65ddff;
+  width: 24px;
+}
+.statusChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  border: 1px solid rgba(101, 221, 255, 0.14);
+  border-radius: 999px;
+  padding: 7px 10px;
+  color: #9edff0;
+  font-size: 9px;
+}
+.statusChip svg {
+  width: 13px;
+}
+.accountPanel {
+  padding: 28px;
+}
+.panelIntro {
+  max-width: 760px;
+}
+.businessForm {
+  margin-top: 28px;
+  display: grid;
+  gap: 16px;
+}
+.formSection {
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: #061321;
+  padding: 19px;
+  display: grid;
+  gap: 12px;
+}
+.formSectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #d9edf8;
+  font-size: 11px;
+  font-weight: 800;
+  margin-bottom: 3px;
+}
+.formSectionTitle svg {
+  width: 17px;
+  color: #65ddff;
+}
+.businessForm label {
+  display: grid;
+  gap: 6px;
+  color: #8ea4ba;
+  font-size: 10px;
+  font-weight: 700;
+}
+.businessForm input,
+.businessForm select,
+.businessForm textarea {
+  width: 100%;
+  border: 1px solid #193550;
+  border-radius: 13px;
+  background: #071522;
+  color: #eef5ff;
+  padding: 13px 14px;
+  resize: vertical;
+}
+.businessForm select {
+  appearance: auto;
+}
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@media (max-width: 760px) {
+  .accountIdentity {
+    display: none;
+  }
+  .dashboard {
+    padding: 18px 14px 50px;
+  }
+  .dashboardHero {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 22px;
+  }
+  .dashboardGrid {
+    grid-template-columns: 1fr;
+  }
+  .nextStepCard {
+    grid-column: auto;
+  }
+  .accountPanel {
+    padding: 20px;
+  }
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+  .businessSummary dl > div {
+    grid-template-columns: 90px 1fr;
+  }
+}
