@@ -32,6 +32,7 @@ Atualizado em 21 de setembro de 2026.
 - Motor determinístico implementado no aplicativo com os 7 pilares oficiais: Estratégia, Marca & Comunicação, Marketing, Vendas, Processos, Tecnologia & IA e Gestão & Crescimento.
 - Resultado calculado exclusivamente a partir das respostas do usuário; a Nova AI não inventa pontuação.
 - Histórico persistido por negócio em `business_diagnostics`, com RLS por usuário.
+- O progresso não concluído do questionário é preservado localmente por negócio para evitar perda ao navegar/recarregar; o rascunho é removido após conclusão bem-sucedida.
 - Resultado destaca um pilar prioritário e um próximo passo, sem paywall na interpretação básica.
 
 ## Nova AI no aplicativo
@@ -48,6 +49,7 @@ Atualizado em 21 de setembro de 2026.
 - As tabelas públicas operacionais estão presentes e com RLS ativo.
 - `nova-ai-meta-webhook` está ativa na versão 5, com `verify_jwt=false` intencional.
 - `nova-ai-admin` está ativa na versão 4, com `verify_jwt=true`.
+- `nova-ai-web-chat` está ativa na versão 3, com `verify_jwt=true` e carregamento server-side de credencial administrativa endurecido.
 - A função administrativa agora aceita leitura via POST para o aplicativo, suporta resposta humana em conversas web e reativa a Nova AI quando um handoff é resolvido/cancelado.
 - Advisor de segurança aponta somente **Leaked Password Protection Disabled**.
 - Índices recém-criados marcados como não usados foram preservados; ainda não há tráfego suficiente para justificar remoção.
@@ -62,7 +64,7 @@ Atualizado em 21 de setembro de 2026.
 
 - Instagram: permissões aprovadas no setup, mas token, tester, conta conectada, assinatura de webhook e fluxo real ainda precisam de validação ponta a ponta.
 - WhatsApp: número, coexistência/migração, token, permissões, webhook e templates ainda precisam de validação. Nenhuma migração irreversível foi executada.
-- Follow-ups: infraestrutura existe, mas scheduler e conformidade de janela/template precisam ser confirmados antes da ativação.
+- Follow-ups: processamento manual seguro foi exposto somente para administradores; scheduler automático e mensagens fora da janela segura continuam bloqueados até confirmação de política/template do provedor.
 - Painel admin: interface restrita implementada no próprio InovaPro.app, com resumo operacional, fila de handoffs, contexto, histórico, assumir/resolver/cancelar e resposta humana.
 
 ## Atendimento humano
