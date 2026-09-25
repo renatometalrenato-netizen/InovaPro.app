@@ -1383,3 +1383,275 @@ footer > small {
     flex-direction: column;
   }
 }
+
+
+/* Restricted operations workspace */
+.adminPage {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+.adminHeader {
+  margin-bottom: 22px;
+}
+.adminHeader h1 {
+  font-size: clamp(32px, 5vw, 54px);
+  letter-spacing: -2px;
+  margin: 12px 0;
+}
+.adminHeader p {
+  color: #8fa4b9;
+  line-height: 1.7;
+}
+.adminLoading,
+.emptyAdmin {
+  min-height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  color: #7890a8;
+  font-size: 11px;
+  border: 1px dashed var(--line);
+  border-radius: 18px;
+}
+.adminMetrics {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
+.adminMetrics article {
+  border: 1px solid var(--line);
+  border-radius: 17px;
+  background: #081727;
+  padding: 16px;
+  min-height: 115px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.adminMetrics svg {
+  width: 18px;
+  color: #65ddff;
+}
+.adminMetrics strong {
+  font-size: 28px;
+  margin-top: auto;
+}
+.adminMetrics span {
+  color: #738ba3;
+  font-size: 9px;
+}
+.adminToolbar {
+  margin: 28px 0 12px;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 12px;
+}
+.adminToolbar h2 {
+  margin: 5px 0 0;
+}
+.adminWorkspace {
+  display: grid;
+  grid-template-columns: minmax(260px, .75fr) minmax(0, 1.5fr);
+  gap: 12px;
+  min-height: 520px;
+}
+.handoffList,
+.handoffDetail {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #061321;
+  padding: 12px;
+}
+.handoffList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 680px;
+  overflow-y: auto;
+}
+.handoffItem {
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: #081727;
+  color: inherit;
+  padding: 13px;
+  text-align: left;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 9px;
+}
+.handoffItem.active {
+  border-color: rgba(101,221,255,.32);
+  background: #0a1d30;
+}
+.handoffItem > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.handoffItem strong {
+  font-size: 11px;
+}
+.handoffItem span,
+.handoffItem time {
+  color: #7189a1;
+  font-size: 8px;
+}
+.handoffItem p {
+  grid-column: 1 / -1;
+  color: #9aafc2;
+  font-size: 10px;
+  line-height: 1.45;
+  margin: 3px 0;
+}
+.handoffItem time {
+  grid-column: 1 / -1;
+}
+.handoffStatus {
+  align-self: start;
+  border-radius: 999px;
+  padding: 5px 8px;
+  border: 1px solid var(--line);
+  text-transform: uppercase;
+  font-size: 7px !important;
+  letter-spacing: .7px;
+}
+.handoffStatus.open { color: #ffd36a; }
+.handoffStatus.accepted { color: #65ddff; }
+.handoffStatus.resolved { color: #8cebc9; }
+.handoffStatus.cancelled { color: #8492a2; }
+.handoffDetail {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.detailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 8px 8px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.detailHeader h2 {
+  margin: 5px 0 0;
+}
+.detailActions {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.detailActions .primary,
+.detailActions .secondary,
+.compactButton {
+  padding: 9px 11px;
+  font-size: 9px;
+}
+.contextBox {
+  margin: 12px 8px;
+  border: 1px solid rgba(101,221,255,.12);
+  border-radius: 15px;
+  background: #081727;
+  padding: 13px;
+}
+.contextBox p {
+  white-space: pre-wrap;
+  color: #9cb1c5;
+  line-height: 1.6;
+  font-size: 10px;
+  margin-bottom: 0;
+}
+.adminMessages {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 430px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.adminMessage {
+  max-width: 82%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px 12px;
+  background: #081727;
+}
+.adminMessage.inbound {
+  align-self: flex-start;
+}
+.adminMessage.outbound {
+  align-self: flex-end;
+  background: #0c2136;
+}
+.adminMessage small,
+.adminMessage time {
+  color: #6f879e;
+  font-size: 8px;
+}
+.adminMessage p {
+  margin: 5px 0;
+  color: #dbe9f6;
+  line-height: 1.55;
+  font-size: 10px;
+  white-space: pre-wrap;
+}
+.adminReply {
+  padding: 10px 8px 4px;
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  align-items: end;
+}
+.adminReply textarea {
+  width: 100%;
+  border: 1px solid #193550;
+  border-radius: 13px;
+  background: #071522;
+  color: #eef5ff;
+  padding: 12px;
+  resize: vertical;
+  font: inherit;
+}
+.chatHeaderActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 9px;
+  margin-bottom: 12px;
+}
+@media (max-width: 900px) {
+  .adminMetrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .adminWorkspace {
+    grid-template-columns: 1fr;
+  }
+  .handoffList {
+    max-height: 330px;
+  }
+}
+@media (max-width: 600px) {
+  .adminMetrics {
+    grid-template-columns: 1fr 1fr;
+  }
+  .adminToolbar,
+  .detailHeader,
+  .chatHeaderActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .detailActions {
+    justify-content: flex-start;
+  }
+  .adminMessage {
+    max-width: 94%;
+  }
+  .adminReply {
+    grid-template-columns: 1fr;
+  }
+}
