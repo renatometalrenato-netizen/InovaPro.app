@@ -1,13 +1,21 @@
 # InovaPro.app
 
-Aplicativo mobile-first do ecossistema digital da **InovaPro Systems**.
+Aplicação **web oficial, mobile-first**, do ecossistema digital da **INOVAPRO SYSTEMS**.
 
-**Conectando você ao mundo.**
+> **Conectando você ao mundo.**
 
-Princípios:
+Princípios oficiais:
 
 - **Entender primeiro. Vender depois.**
 - **Problema primeiro. Tecnologia depois. Resultado sempre.**
+
+## Papel deste repositório
+
+Este repositório é a **fonte canônica da aplicação web** da INOVAPRO SYSTEMS.
+
+Ele **não** é o projeto Android nativo do Google AI Studio e **não** deve receber código Kotlin/Jetpack Compose.
+
+Mapa oficial dos repositórios: [docs/ECOSYSTEM.md](docs/ECOSYSTEM.md).
 
 ## Stack oficial
 
@@ -62,7 +70,7 @@ O frontend utiliza somente configurações publicáveis:
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_PUBLISHABLE_KEY`
 
-Credenciais privadas e chaves de provedores de IA permanecem no backend/Edge Functions.
+Credenciais privadas, chaves administrativas e segredos de provedores de IA devem permanecer exclusivamente no backend/Edge Functions.
 
 ## Integrações externas ainda dependentes de configuração
 
@@ -72,4 +80,14 @@ Credenciais privadas e chaves de provedores de IA permanecem no backend/Edge Fun
 - provedor de IA principal: segredo server-side do provedor escolhido
 - proteção de senha vazada do Supabase: depende de disponibilidade/configuração do plano
 
-O estado técnico detalhado está em `docs/OPERATIONAL_STATUS.md`.
+O estado técnico detalhado está em [docs/OPERATIONAL_STATUS.md](docs/OPERATIONAL_STATUS.md).
+
+## Governança
+
+Para evitar divergência entre projetos:
+
+1. mudanças da aplicação web entram neste repositório;
+2. mudanças do Android nativo entram em `InovaPro-AIStudio-Google`;
+3. artefatos Expo/React Native e empacotamento operacional permanecem nos repositórios auxiliares correspondentes;
+4. nomes públicos da marca devem usar **INOVAPRO SYSTEMS** e **Nova AI**;
+5. segredos nunca devem ser versionados.
