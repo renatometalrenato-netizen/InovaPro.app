@@ -1,6 +1,6 @@
 # Estado operacional — InovaPro Systems / Nova AI
 
-Atualizado em 21 de setembro de 2026.
+Atualizado em 25 de setembro de 2026.
 
 ## Aplicativo web
 
