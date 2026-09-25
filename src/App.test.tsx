@@ -9,6 +9,8 @@ const auth = vi.hoisted(() => ({
   signInWithOAuth: vi.fn(),
   signUp: vi.fn(),
   signOut: vi.fn(),
+  resetPasswordForEmail: vi.fn(),
+  updateUser: vi.fn(),
   onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
   from: vi.fn(),
   functionsInvoke: vi.fn(),
@@ -27,6 +29,8 @@ describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     auth.onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    auth.resetPasswordForEmail.mockResolvedValue({ data: {}, error: null })
+    auth.updateUser.mockResolvedValue({ data: { user: null }, error: null })
     auth.functionsInvoke.mockImplementation((name: string, options?: { body?: { action?: string } }) => {
       if (name === 'nova-ai-admin' && options?.body?.action === 'summary') {
         return Promise.resolve({ data: { messages: [] }, error: null })
@@ -123,6 +127,7 @@ describe('App', () => {
     await userEvent.type(screen.getByLabelText('E-mail'), 'pessoa@example.com')
     await userEvent.type(screen.getByLabelText('Celular ou WhatsApp'), '11999999999')
     await userEvent.type(screen.getByLabelText('Senha'), 'segredo123')
+    await userEvent.click(screen.getByRole('checkbox'))
     await userEvent.click(
       within(screen.getByRole('dialog')).getByRole('button', { name: 'Criar conta' }),
     )
@@ -131,11 +136,41 @@ describe('App', () => {
       expect.objectContaining({
         options: expect.objectContaining({
           emailRedirectTo: 'http://localhost:5173/',
-          data: { full_name: 'Pessoa Teste', phone: '11999999999' },
+          data: {
+            full_name: 'Pessoa Teste',
+            phone: '11999999999',
+            accepted_terms_version: '1.0',
+            accepted_privacy_version: '1.0',
+          },
         }),
       }),
     )
   })
+  it('solicita recuperação de senha pelo Supabase', async () => {
+    auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
+    render(<App />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Iniciar sessão' }))
+    await userEvent.type(screen.getByLabelText('E-mail'), 'pessoa@example.com')
+    await userEvent.click(screen.getByRole('button', { name: 'Esqueci minha senha' }))
+    await waitFor(() => expect(auth.resetPasswordForEmail).toHaveBeenCalled())
+    expect(auth.resetPasswordForEmail).toHaveBeenCalledWith('pessoa@example.com', {
+      redirectTo: 'http://localhost:5173/',
+    })
+  })
+
+  it('exige aceite legal antes de criar a conta', async () => {
+    auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
+    render(<App />)
+    await userEvent.click((await screen.findAllByRole('button', { name: 'Criar conta' }))[0])
+    await userEvent.type(screen.getByLabelText('Nome'), 'Pessoa Teste')
+    await userEvent.type(screen.getByLabelText('E-mail'), 'pessoa@example.com')
+    await userEvent.type(screen.getByLabelText('Celular ou WhatsApp'), '11999999999')
+    await userEvent.type(screen.getByLabelText('Senha'), 'segredo123')
+    await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Criar conta' }))
+    expect(await screen.findByRole('alert')).toHaveTextContent('Termos de Uso')
+    expect(auth.signUp).not.toHaveBeenCalled()
+  })
+
   it('fecha o modal com Escape', async () => {
     auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
     render(<App />)

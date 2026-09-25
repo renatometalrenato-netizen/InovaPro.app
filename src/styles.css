@@ -1668,3 +1668,40 @@ footer > small {
     justify-content: flex-start;
   }
 }
+
+
+.authTextButton {
+  align-self: flex-end;
+  border: 0;
+  background: transparent;
+  color: #7fcfe3;
+  font-size: 9px;
+  padding: 4px 0 8px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.legalCheck {
+  display: flex;
+  gap: 9px;
+  align-items: flex-start;
+  color: #7f96ad;
+  font-size: 9px;
+  line-height: 1.5;
+  margin: 7px 0 4px;
+}
+.legalCheck input {
+  width: 16px;
+  height: 16px;
+  margin: 1px 0 0;
+  flex: 0 0 16px;
+}
+.legalCheck a,
+.legalLinks a {
+  color: #9de7f7;
+}
+.legalLinks {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}

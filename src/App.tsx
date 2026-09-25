@@ -366,6 +366,133 @@ function Privacy() {
     </main>
   )
 }
+function Terms() {
+  return (
+    <main className="main">
+      <section className="page privacy">
+        <span className="tag">TERMOS DE USO</span>
+        <h1>
+          Regras para usar o <em>InovaPro.app.</em>
+        </h1>
+        <p className="lead">
+          Estes termos descrevem as condições básicas de uso da plataforma, da Nova AI e dos
+          recursos digitais da InovaPro Systems.
+        </p>
+        <h2>Uso da plataforma</h2>
+        <p>
+          O usuário deve fornecer informações verdadeiras, proteger suas credenciais e utilizar o
+          aplicativo de forma lícita. Recursos podem evoluir, ser ajustados ou ficar temporariamente
+          indisponíveis durante desenvolvimento e manutenção.
+        </p>
+        <h2>Nova AI</h2>
+        <p>
+          A Nova AI é uma inteligência artificial de apoio consultivo. Suas respostas servem para
+          organizar contexto, diagnóstico e próximos passos e não representam garantia de resultado
+          comercial, financeiro ou operacional.
+        </p>
+        <h2>Diagnóstico e decisões</h2>
+        <p>
+          O Diagnóstico InovaPro 360° utiliza regras definidas pela plataforma e as respostas
+          fornecidas pelo usuário. A interpretação deve ser considerada em conjunto com o contexto
+          real do negócio.
+        </p>
+        <h2>Conteúdo e propriedade intelectual</h2>
+        <p>
+          Marca, identidade, interfaces, materiais e conteúdos próprios da InovaPro Systems não
+          podem ser copiados ou explorados comercialmente sem autorização, ressalvados os usos
+          permitidos por lei.
+        </p>
+        <h2>Privacidade</h2>
+        <p>
+          O tratamento de dados pessoais segue o Aviso de Privacidade e a legislação aplicável. A
+          criação de conta não implica consentimento automático para comunicações promocionais.
+        </p>
+        <h2>Atualizações</h2>
+        <p>
+          Versão 1.0 — 25 de setembro de 2026. Mudanças relevantes deverão ser apresentadas de forma
+          adequada antes de produzirem efeitos quando a legislação exigir.
+        </p>
+        <p className="legalReview">
+          Este texto é uma base operacional e deve passar por revisão jurídica especializada antes
+          da expansão comercial ou de operações contratuais de maior risco.
+        </p>
+        <div className="legalLinks">
+          <a className="secondary" href="./privacidade">Ver privacidade</a>
+          <a className="secondary" href="./">Voltar ao início</a>
+        </div>
+      </section>
+    </main>
+  )
+}
+
+function PasswordRecovery({ close }: { close: () => void }) {
+  const [password, setPassword] = useState('')
+  const [confirm, setConfirm] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
+
+  async function submit(e: FormEvent) {
+    e.preventDefault()
+    setError('')
+    setMessage('')
+    if (password.length < 8) {
+      setError('Use uma senha com pelo menos 8 caracteres.')
+      return
+    }
+    if (password !== confirm) {
+      setError('As senhas não coincidem.')
+      return
+    }
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.updateUser({ password })
+      if (error) throw error
+      setMessage('Senha atualizada com sucesso.')
+      window.setTimeout(close, 900)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível atualizar sua senha.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="back">
+      <form className="modal" role="dialog" aria-modal="true" aria-labelledby="recovery-title" onSubmit={submit}>
+        <Brand />
+        <span className="tag">NOVA SENHA</span>
+        <h2 id="recovery-title">Proteja novamente sua conta.</h2>
+        <input
+          aria-label="Nova senha"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Nova senha"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          required
+        />
+        <input
+          aria-label="Confirmar nova senha"
+          value={confirm}
+          onChange={(e) => setConfirm(e.target.value)}
+          placeholder="Confirmar nova senha"
+          type="password"
+          autoComplete="new-password"
+          minLength={8}
+          required
+        />
+        {error && <p className="authError" role="alert">{error}</p>}
+        {message && <p className="authSuccess" role="status">{message}</p>}
+        <button className="primary full" disabled={loading}>
+          {loading ? 'Atualizando...' : 'Atualizar senha'}
+        </button>
+      </form>
+    </div>
+  )
+}
+
 function FAQ() {
   const [o, setO] = useState(0)
   return (
@@ -405,6 +532,7 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [legalAccepted, setLegalAccepted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
@@ -450,6 +578,27 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
     }
   }
 
+  async function requestPasswordReset() {
+    setMessage('')
+    setError('')
+    if (!email.trim()) {
+      setError('Informe seu e-mail para receber o link de recuperação.')
+      return
+    }
+    setLoading(true)
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: publicConfig.appUrl,
+      })
+      if (error) throw error
+      setMessage('Se este e-mail estiver cadastrado, você receberá um link para redefinir a senha.')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível solicitar a recuperação.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   async function submit(e: FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -461,12 +610,21 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
           setError('Preencha seu nome e celular / WhatsApp.')
           return
         }
+        if (!legalAccepted) {
+          setError('Para criar a conta, confirme que leu os Termos de Uso e o Aviso de Privacidade.')
+          return
+        }
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
             emailRedirectTo: publicConfig.appUrl,
-            data: { full_name: name.trim(), phone: phone.trim() },
+            data: {
+              full_name: name.trim(),
+              phone: phone.trim(),
+              accepted_terms_version: '1.0',
+              accepted_privacy_version: '1.0',
+            },
           },
         })
         if (error) throw error
@@ -562,6 +720,24 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
           minLength={6}
           required
         />
+        {mode === 'login' && (
+          <button type="button" className="authTextButton" onClick={requestPasswordReset} disabled={loading}>
+            Esqueci minha senha
+          </button>
+        )}
+        {mode === 'signup' && (
+          <label className="legalCheck">
+            <input
+              type="checkbox"
+              checked={legalAccepted}
+              onChange={(e) => setLegalAccepted(e.target.checked)}
+            />
+            <span>
+              Li e concordo com os <a href="./termos" target="_blank" rel="noreferrer">Termos de Uso</a> e o{' '}
+              <a href="./privacidade" target="_blank" rel="noreferrer">Aviso de Privacidade</a>.
+            </span>
+          </label>
+        )}
         {error && (
           <p className="authError" role="alert">
             {error}
@@ -610,6 +786,7 @@ function WebsiteApp() {
   const [checking, setChecking] = useState(true)
   const [sessionError, setSessionError] = useState(false)
   const [sessionAttempt, setSessionAttempt] = useState(0)
+  const [recoveringPassword, setRecoveringPassword] = useState(false)
   const retrySession = useCallback(() => {
     setChecking(true)
     setSessionError(false)
@@ -635,9 +812,10 @@ function WebsiteApp() {
     })()
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       const u = session?.user
       setUser(u ? mapSessionUser(u) : null)
+      if (event === 'PASSWORD_RECOVERY') setRecoveringPassword(true)
     })
     return () => {
       mounted = false
@@ -666,7 +844,13 @@ function WebsiteApp() {
         </button>
       </div>
     )
-  if (user) return <Dashboard user={user} exit={exit} />
+  if (user)
+    return (
+      <>
+        <Dashboard user={user} exit={exit} />
+        {recoveringPassword && <PasswordRecovery close={() => setRecoveringPassword(false)} />}
+      </>
+    )
   return (
     <div>
       <Header section={section} setSection={setSection} auth={setAuth} />
@@ -681,6 +865,7 @@ function WebsiteApp() {
         <Brand />
         <div className="footerLinks">
           <a href="./privacidade">Privacidade</a>
+          <a href="./termos">Termos</a>
           <small>© 2026 InovaPro Systems.</small>
         </div>
       </footer>
@@ -690,5 +875,7 @@ function WebsiteApp() {
 }
 
 export default function App() {
-  return window.location.pathname.endsWith('/privacidade') ? <Privacy /> : <WebsiteApp />
+  if (window.location.pathname.endsWith('/privacidade')) return <Privacy />
+  if (window.location.pathname.endsWith('/termos')) return <Terms />
+  return <WebsiteApp />
 }
