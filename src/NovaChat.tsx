@@ -41,8 +41,24 @@ export function NovaChat({
   }, [])
 
   useEffect(() => {
-    void loadHistory()
-  }, [loadHistory])
+    let mounted = true
+    void (async () => {
+      const { data, error } = await supabase.functions.invoke('nova-ai-web-chat', {
+        body: { action: 'history' },
+      })
+      if (!mounted) return
+      setLoading(false)
+      if (error) {
+        setError('Não foi possível carregar a conversa da Nova AI.')
+        return
+      }
+      const history = Array.isArray(data?.messages) ? data.messages : []
+      setMessages(history)
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
