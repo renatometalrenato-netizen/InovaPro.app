@@ -1,15 +1,11 @@
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react'
-import type { LucideIcon } from 'lucide-react'
 import {
   ArrowRight,
   BarChart3,
   BrainCircuit,
-  ChevronRight,
-  CircleHelp,
   Instagram,
   Menu,
   MessageCircle,
-  Rocket,
   Sparkles,
   TrendingUp,
   Workflow,
