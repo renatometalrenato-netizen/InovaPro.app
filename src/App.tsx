@@ -1,26 +1,24 @@
 import { FormEvent, KeyboardEvent, useCallback, useEffect, useRef, useState } from 'react'
-import type { LucideIcon } from 'lucide-react'
 import {
   ArrowRight,
   BarChart3,
   BrainCircuit,
-  ChevronRight,
-  CircleHelp,
   Instagram,
   Menu,
   MessageCircle,
-  Rocket,
   Sparkles,
   TrendingUp,
   Workflow,
   X,
 } from 'lucide-react'
+import type { User } from '@supabase/supabase-js'
+import { Dashboard } from './Dashboard'
 import { supabase } from './supabase'
 import { publicConfig } from './config'
 
 type Section = 'inicio' | 'solucoes' | 'conteudos' | 'quem-somos' | 'faq'
 type AuthMode = 'login' | 'signup'
-type SessionUser = { id: string; email?: string }
+type SessionUser = { id: string; email?: string; fullName?: string; avatarUrl?: string }
 const services = [
   [
     Instagram,
@@ -589,55 +587,20 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
   )
 }
 
-function DemoApp({ user, exit }: { user: SessionUser; exit: () => void }) {
-  const goals: ReadonlyArray<readonly [LucideIcon, string]> = [
-    [TrendingUp, 'Quero vender mais'],
-    [Workflow, 'Quero organizar meu negócio'],
-    [Instagram, 'Quero melhorar minhas redes'],
-    [BarChart3, 'Quero entender meus números'],
-    [Rocket, 'Estou começando'],
-    [CircleHelp, 'Não sei do que preciso'],
-  ]
-  return (
-    <div className="demo">
-      <header>
-        <Brand />
-        <div className="sessionActions">
-          <small>{user.email}</small>
-          <button className="login" onClick={exit}>
-            Sair
-          </button>
-        </div>
-      </header>
-      <main>
-        <span className="tag">INÍCIO</span>
-        <h1>
-          O que você quer <em>melhorar</em> no seu negócio?
-        </h1>
-        <p className="lead">
-          Sua sessão está conectada ao Supabase. Agora podemos evoluir o perfil e o Meu Negócio
-          sobre esta base.
-        </p>
-        <div className="goals">
-          {goals.map(([I, t]) => (
-            <button key={t}>
-              <I aria-hidden="true" />
-              <strong>{t}</strong>
-              <ChevronRight aria-hidden="true" />
-            </button>
-          ))}
-        </div>
-        <div className="demoNova">
-          <InfinityMark />
-          <div>
-            <span className="tag">NOVA AI</span>
-            <h2>Não sabe por onde começar?</h2>
-            <p>Conte o que está acontecendo. A Nova AI começa pelo problema.</p>
-          </div>
-        </div>
-      </main>
-    </div>
-  )
+function mapSessionUser(user: User): SessionUser {
+  const fullName =
+    typeof user.user_metadata?.full_name === 'string'
+      ? user.user_metadata.full_name
+      : typeof user.user_metadata?.name === 'string'
+        ? user.user_metadata.name
+        : undefined
+  const avatarUrl =
+    typeof user.user_metadata?.avatar_url === 'string'
+      ? user.user_metadata.avatar_url
+      : typeof user.user_metadata?.picture === 'string'
+        ? user.user_metadata.picture
+        : undefined
+  return { id: user.id, email: user.email, fullName, avatarUrl }
 }
 
 function WebsiteApp() {
@@ -660,7 +623,7 @@ function WebsiteApp() {
         if (error) throw error
         if (!mounted) return
         const u = data.session?.user
-        setUser(u ? { id: u.id, email: u.email } : null)
+        setUser(u ? mapSessionUser(u) : null)
       } catch {
         if (mounted) {
           setUser(null)
@@ -674,7 +637,7 @@ function WebsiteApp() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       const u = session?.user
-      setUser(u ? { id: u.id, email: u.email } : null)
+      setUser(u ? mapSessionUser(u) : null)
     })
     return () => {
       mounted = false
@@ -703,7 +666,7 @@ function WebsiteApp() {
         </button>
       </div>
     )
-  if (user) return <DemoApp user={user} exit={exit} />
+  if (user) return <Dashboard user={user} exit={exit} />
   return (
     <div>
       <Header section={section} setSection={setSection} auth={setAuth} />
