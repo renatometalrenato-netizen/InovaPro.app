@@ -16,7 +16,7 @@ Atualizado em 21 de setembro de 2026.
 - Modal de autenticação com foco inicial, Escape, retorno de foco e focus trap.
 - Menu e FAQ com estados ARIA.
 - Nome visível padronizado como **Nova AI**; identificadores técnicos não foram alterados.
-- Página `/privacidade` criada com marketing opcional e recomendação de revisão jurídica.
+- Páginas `/privacidade` e `/termos` criadas, com marketing opcional e recomendação de revisão jurídica.
 - Metadados básicos de SEO e compartilhamento adicionados. `og:image`, `twitter:image` e favicon aguardam ativo oficial para não criar uma marca não aprovada.
 
 ## Qualidade e CI
@@ -58,6 +58,8 @@ Atualizado em 21 de setembro de 2026.
 
 - Login por e-mail e senha permanece ativo via Supabase Auth.
 - Entrada por Google OAuth foi adicionada ao frontend usando `signInWithOAuth` e o `VITE_APP_URL` como redirect.
+- Recuperação de senha por e-mail e definição de nova senha após evento `PASSWORD_RECOVERY` foram implementadas.
+- Cadastro exige aceite explícito dos Termos de Uso e Aviso de Privacidade, sem acoplar consentimento de marketing.
 - A ativação ponta a ponta ainda depende de validar o provider Google, Site URL e Redirect URLs no painel do Supabase.
 
 ## Integrações ainda não classificadas como produção
