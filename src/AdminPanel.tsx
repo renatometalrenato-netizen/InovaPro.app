@@ -73,6 +73,7 @@ export function AdminPanel({ onBack }: { onBack: () => void }) {
   const [reply, setReply] = useState('')
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
+  const [followupMessage, setFollowupMessage] = useState('')
   const [error, setError] = useState('')
 
   async function loadOverview() {
@@ -150,6 +151,28 @@ export function AdminPanel({ onBack }: { onBack: () => void }) {
     }
   }
 
+  async function processFollowups() {
+    setActionLoading(true)
+    setError('')
+    setFollowupMessage('')
+    try {
+      const response = await invokeAdmin({ action: 'process_followups', limit: 20 })
+      const results = Array.isArray(response?.data) ? response.data : []
+      const sent = results.filter((item: { sent?: boolean }) => item.sent).length
+      const checked = results.length
+      setFollowupMessage(
+        checked === 0
+          ? 'Nenhum follow-up pendente precisava de processamento.'
+          : `Follow-ups verificados: ${checked}. Enviados com segurança: ${sent}.`,
+      )
+      await loadOverview()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível processar os follow-ups.')
+    } finally {
+      setActionLoading(false)
+    }
+  }
+
   useEffect(() => {
     let mounted = true
     void (async () => {
@@ -201,9 +224,14 @@ export function AdminPanel({ onBack }: { onBack: () => void }) {
               <span className="tag">FILA HUMANA</span>
               <h2>Solicitações que precisam de uma pessoa.</h2>
             </div>
-            <button className="secondary" onClick={() => void loadOverview()}>
-              <RefreshCw aria-hidden="true" /> Atualizar
-            </button>
+            <div className="adminToolbarActions">
+              <button className="secondary" disabled={actionLoading} onClick={() => void processFollowups()}>
+                <Clock3 aria-hidden="true" /> Processar follow-ups
+              </button>
+              <button className="secondary" onClick={() => void loadOverview()}>
+                <RefreshCw aria-hidden="true" /> Atualizar
+              </button>
+            </div>
           </div>
 
           <div className="adminWorkspace">
@@ -300,6 +328,7 @@ export function AdminPanel({ onBack }: { onBack: () => void }) {
         </>
       )}
 
+      {followupMessage && <p className="authSuccess" role="status">{followupMessage}</p>}
       {error && <p className="authError" role="alert">{error}</p>}
     </section>
   )
