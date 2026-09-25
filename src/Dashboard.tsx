@@ -10,6 +10,7 @@ import {
   Target,
   UserRound,
 } from 'lucide-react'
+import { AdminPanel } from './AdminPanel'
 import { Diagnostic360 } from './Diagnostic360'
 import { NovaChat } from './NovaChat'
 import { supabase } from './supabase'
@@ -39,7 +40,7 @@ type Business = {
   main_goal: string | null
 }
 
-type View = 'inicio' | 'negocio' | 'diagnostico' | 'nova'
+type View = 'inicio' | 'negocio' | 'diagnostico' | 'nova' | 'admin'
 
 type DiagnosticPillar =
   | 'strategy'
@@ -100,6 +101,7 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
+  const [adminEnabled, setAdminEnabled] = useState(false)
 
   const displayName = useMemo(
     () => profile?.full_name?.trim() || user.fullName?.trim() || user.email?.split('@')[0] || 'empreendedor',
@@ -165,6 +167,20 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
       mounted = false
     }
   }, [user.fullName, user.id])
+
+  useEffect(() => {
+    let mounted = true
+    void (async () => {
+      const { data, error } = await supabase.functions.invoke('nova-ai-admin', {
+        body: { action: 'summary' },
+      })
+      if (!mounted) return
+      setAdminEnabled(!error && typeof data?.contacts === 'number')
+    })()
+    return () => {
+      mounted = false
+    }
+  }, [])
 
   async function saveAccount(e: FormEvent) {
     e.preventDefault()
@@ -274,9 +290,16 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
           >
             Nova AI
           </button>
+          {adminEnabled && (
+            <button className={view === 'admin' ? 'active' : ''} onClick={() => setView('admin')}>
+              Operação
+            </button>
+          )}
         </nav>
 
-        {view === 'diagnostico' && business ? (
+        {view === 'admin' && adminEnabled ? (
+          <AdminPanel onBack={() => setView('inicio')} />
+        ) : view === 'diagnostico' && business ? (
           <Diagnostic360 userId={user.id} business={business} onBack={() => setView('inicio')} />
         ) : view === 'nova' && business ? (
           <NovaChat businessName={business.name} onBack={() => setView('inicio')} />

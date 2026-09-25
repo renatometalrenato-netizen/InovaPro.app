@@ -1,5 +1,5 @@
-import { FormEvent, useEffect, useRef, useState } from 'react'
-import { ArrowLeft, Loader2, Send, Sparkles, UserRound } from 'lucide-react'
+import { FormEvent, useCallback, useEffect, useRef, useState } from 'react'
+import { ArrowLeft, Loader2, RefreshCw, Send, Sparkles, UserRound } from 'lucide-react'
 import { supabase } from './supabase'
 
 type ChatMessage = {
@@ -23,26 +23,38 @@ export function NovaChat({
   const [error, setError] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
+  const loadHistory = useCallback(async (showLoading = true) => {
+    if (showLoading) setLoading(true)
+    setError('')
+    const { data, error } = await supabase.functions.invoke('nova-ai-web-chat', {
+      body: { action: 'history' },
+    })
+
+    if (showLoading) setLoading(false)
+    if (error) {
+      setError('Não foi possível carregar a conversa da Nova AI.')
+      return
+    }
+
+    const history = Array.isArray(data?.messages) ? data.messages : []
+    setMessages(history)
+  }, [])
+
   useEffect(() => {
     let mounted = true
     void (async () => {
-      setLoading(true)
-      setError('')
       const { data, error } = await supabase.functions.invoke('nova-ai-web-chat', {
         body: { action: 'history' },
       })
-
       if (!mounted) return
       setLoading(false)
       if (error) {
         setError('Não foi possível carregar a conversa da Nova AI.')
         return
       }
-
       const history = Array.isArray(data?.messages) ? data.messages : []
       setMessages(history)
     })()
-
     return () => {
       mounted = false
     }
@@ -79,7 +91,12 @@ export function NovaChat({
   return (
     <section className="novaChatPage">
       <div className="novaChatHeader">
-        <button className="link" onClick={onBack}><ArrowLeft aria-hidden="true" /> Voltar ao painel</button>
+        <div className="chatHeaderActions">
+          <button className="link" onClick={onBack}><ArrowLeft aria-hidden="true" /> Voltar ao painel</button>
+          <button className="secondary compactButton" onClick={() => void loadHistory(false)} disabled={sending}>
+            <RefreshCw aria-hidden="true" /> Atualizar conversa
+          </button>
+        </div>
         <span className="tag"><Sparkles aria-hidden="true" /> NOVA AI</span>
         <h1>Consultora Digital da InovaPro Systems.</h1>
         <p>

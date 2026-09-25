@@ -27,7 +27,12 @@ describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     auth.onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
-    auth.functionsInvoke.mockResolvedValue({ data: { messages: [] }, error: null })
+    auth.functionsInvoke.mockImplementation((name: string, options?: { body?: { action?: string } }) => {
+      if (name === 'nova-ai-admin' && options?.body?.action === 'summary') {
+        return Promise.resolve({ data: { messages: [] }, error: null })
+      }
+      return Promise.resolve({ data: { messages: [] }, error: null })
+    })
     auth.from.mockImplementation(() => {
       const query = {
         eq: vi.fn(),

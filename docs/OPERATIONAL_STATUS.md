@@ -47,7 +47,8 @@ Atualizado em 21 de setembro de 2026.
 - Projeto `tygksrzhqqjsltmycvxp` está `ACTIVE_HEALTHY` na região `sa-east-1`.
 - As tabelas públicas operacionais estão presentes e com RLS ativo.
 - `nova-ai-meta-webhook` está ativa na versão 5, com `verify_jwt=false` intencional.
-- `nova-ai-admin` está ativa na versão 3, com `verify_jwt=true`.
+- `nova-ai-admin` está ativa na versão 4, com `verify_jwt=true`.
+- A função administrativa agora aceita leitura via POST para o aplicativo, suporta resposta humana em conversas web e reativa a Nova AI quando um handoff é resolvido/cancelado.
 - Advisor de segurança aponta somente **Leaked Password Protection Disabled**.
 - Índices recém-criados marcados como não usados foram preservados; ainda não há tráfego suficiente para justificar remoção.
 
@@ -62,7 +63,14 @@ Atualizado em 21 de setembro de 2026.
 - Instagram: permissões aprovadas no setup, mas token, tester, conta conectada, assinatura de webhook e fluxo real ainda precisam de validação ponta a ponta.
 - WhatsApp: número, coexistência/migração, token, permissões, webhook e templates ainda precisam de validação. Nenhuma migração irreversível foi executada.
 - Follow-ups: infraestrutura existe, mas scheduler e conformidade de janela/template precisam ser confirmados antes da ativação.
-- Painel admin: Edge Function existe; interface Lovable/GitHub ainda precisa de comparação antes de sincronização.
+- Painel admin: interface restrita implementada no próprio InovaPro.app, com resumo operacional, fila de handoffs, contexto, histórico, assumir/resolver/cancelar e resposta humana.
+
+## Atendimento humano
+
+- Usuários presentes e ativos em `nova_admin_users` recebem a aba **Operação** dentro da área autenticada.
+- Handoffs web podem ser assumidos e respondidos no app sem depender da API Meta.
+- Ao assumir um handoff, respostas automáticas ficam desativadas; ao resolver ou cancelar, a Nova AI volta ao estado `AI_ACTIVE`.
+- O cliente pode atualizar a conversa da Nova AI para receber mensagens humanas que chegaram durante o handoff.
 
 ## Bloqueios externos
 
