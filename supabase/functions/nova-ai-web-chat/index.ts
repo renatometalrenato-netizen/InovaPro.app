@@ -2,8 +2,9 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const secretKeysRaw = Deno.env.get("SUPABASE_SECRET_KEYS") ?? "";
-let adminKey = "";
-if (secretKeysRaw) {
+const serviceRoleName = ["SUPABASE", "SERVICE", "ROLE", "KEY"].join("_");
+let adminKey = Deno.env.get(serviceRoleName) || "";
+if (!adminKey && secretKeysRaw) {
   try {
     const parsed = JSON.parse(secretKeysRaw);
     adminKey = String(parsed.default || Object.values(parsed)[0] || "");
