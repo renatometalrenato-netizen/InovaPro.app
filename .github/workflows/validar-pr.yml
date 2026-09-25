@@ -40,7 +40,7 @@ jobs:
       - name: Executar testes
         run: npm test
 
-      - name: Construir aplicativo
+      - name: Construir aplicativo para GitHub Pages
         run: npm run build
         env:
           VITE_APP_URL: https://renatometalrenato-netizen.github.io/InovaPro.app/
@@ -48,6 +48,16 @@ jobs:
           VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_8LFlbAZtz6pvbChWFWR8zw_PX4HrIdp
 
       - name: Conferir que o build gerou saida
+        run: test -f dist/index.html
+
+      - name: Construir aplicativo para Vercel
+        run: npm run build:vercel
+        env:
+          VITE_APP_URL: https://example.vercel.app/
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_test
+
+      - name: Conferir build Vercel
         run: test -f dist/index.html
 
       - name: Barrar segredos e artefatos versionados
