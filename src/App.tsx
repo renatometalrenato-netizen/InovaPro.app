@@ -731,7 +731,6 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
               type="checkbox"
               checked={legalAccepted}
               onChange={(e) => setLegalAccepted(e.target.checked)}
-              required
             />
             <span>
               Li e concordo com os <a href="./termos" target="_blank" rel="noreferrer">Termos de Uso</a> e o{' '}
