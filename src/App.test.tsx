@@ -10,8 +10,9 @@ const auth = vi.hoisted(() => ({
   signUp: vi.fn(),
   signOut: vi.fn(),
   onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+  from: vi.fn(),
 }))
-vi.mock('./supabase', () => ({ supabase: { auth } }))
+vi.mock('./supabase', () => ({ supabase: { auth, from: auth.from } }))
 vi.mock('./config', () => ({
   publicConfig: {
     appUrl: 'http://localhost:5173/',
@@ -25,6 +26,18 @@ describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     auth.onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    auth.from.mockImplementation(() => ({
+      select: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+        })),
+      })),
+      upsert: vi.fn(() => ({
+        select: vi.fn(() => ({
+          single: vi.fn().mockResolvedValue({ data: null, error: null }),
+        })),
+      })),
+    }))
     window.history.replaceState({}, '', '/InovaPro.app/')
   })
   it('encerra o boot sem sessão', async () => {
@@ -33,13 +46,16 @@ describe('App', () => {
     expect(screen.getByText('Carregando InovaPro...')).toBeInTheDocument()
     expect(await screen.findByText(/Seu negócio conectado/)).toBeInTheDocument()
   })
-  it('abre a área autenticada com sessão válida', async () => {
+  it('abre onboarding quando a conta ainda não possui negócio', async () => {
     auth.getSession.mockResolvedValue({
-      data: { session: { user: { id: '1', email: 'pessoa@example.com' } } },
+      data: { session: { user: { id: '1', email: 'pessoa@example.com', user_metadata: {} } } },
       error: null,
     })
     render(<App />)
-    expect(await screen.findByText('pessoa@example.com')).toBeInTheDocument()
+    expect(await screen.findByText('Conte um pouco sobre seu negócio.')).toBeInTheDocument()
+    expect(screen.getByText('pessoa@example.com')).toBeInTheDocument()
+    expect(auth.from).toHaveBeenCalledWith('profiles')
+    expect(auth.from).toHaveBeenCalledWith('businesses')
   })
   it('exibe erro e permite tentar a sessão novamente', async () => {
     auth.getSession
