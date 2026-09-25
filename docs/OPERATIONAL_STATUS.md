@@ -26,10 +26,25 @@ Atualizado em 21 de setembro de 2026.
 - Deploy e validação padronizados nas versões oficiais atuais das GitHub Actions.
 - Bundle medido em 456,44 kB (132,36 kB gzip). Otimização adiada até existirem rotas/componentes com ganho claro de divisão.
 
+## Diagnóstico InovaPro 360°
+
+- Motor determinístico implementado no aplicativo com os 7 pilares oficiais: Estratégia, Marca & Comunicação, Marketing, Vendas, Processos, Tecnologia & IA e Gestão & Crescimento.
+- Resultado calculado exclusivamente a partir das respostas do usuário; a Nova AI não inventa pontuação.
+- Histórico persistido por negócio em `business_diagnostics`, com RLS por usuário.
+- Resultado destaca um pilar prioritário e um próximo passo, sem paywall na interpretação básica.
+
+## Nova AI no aplicativo
+
+- Chat web autenticado conectado por Edge Function `nova-ai-web-chat`.
+- Contexto do perfil, negócio e diagnóstico mais recente é carregado no backend.
+- Histórico de conversa é persistido nas tabelas Nova existentes.
+- Pedidos de proposta, orçamento, reunião, contratação ou atendimento humano abrem handoff para a equipe.
+- Quando um provedor de IA server-side não estiver configurado/disponível, a função responde com fallback consultivo explícito e seguro.
+
 ## Supabase
 
 - Projeto `tygksrzhqqjsltmycvxp` está `ACTIVE_HEALTHY` na região `sa-east-1`.
-- As 18 tabelas públicas esperadas estão presentes e com RLS ativo.
+- As tabelas públicas operacionais estão presentes e com RLS ativo.
 - `nova-ai-meta-webhook` está ativa na versão 5, com `verify_jwt=false` intencional.
 - `nova-ai-admin` está ativa na versão 3, com `verify_jwt=true`.
 - Advisor de segurança aponta somente **Leaked Password Protection Disabled**.
