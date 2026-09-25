@@ -30,6 +30,12 @@ Atualizado em 21 de setembro de 2026.
 - Advisor de segurança aponta somente **Leaked Password Protection Disabled**.
 - Índices recém-criados marcados como não usados foram preservados; ainda não há tráfego suficiente para justificar remoção.
 
+## Autenticação
+
+- Login por e-mail e senha permanece ativo via Supabase Auth.
+- Entrada por Google OAuth foi adicionada ao frontend usando `signInWithOAuth` e o `VITE_APP_URL` como redirect.
+- A ativação ponta a ponta ainda depende de validar o provider Google, Site URL e Redirect URLs no painel do Supabase.
+
 ## Integrações ainda não classificadas como produção
 
 - Instagram: permissões aprovadas no setup, mas token, tester, conta conectada, assinatura de webhook e fluxo real ainda precisam de validação ponta a ponta.

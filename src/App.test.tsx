@@ -6,6 +6,7 @@ import App from './App'
 const auth = vi.hoisted(() => ({
   getSession: vi.fn(),
   signInWithPassword: vi.fn(),
+  signInWithOAuth: vi.fn(),
   signUp: vi.fn(),
   signOut: vi.fn(),
   onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
@@ -60,6 +61,18 @@ describe('App', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Entrar' }))
     await waitFor(() => expect(auth.signInWithPassword).toHaveBeenCalled())
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+  it('inicia login com Google usando o redirect público configurado', async () => {
+    auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
+    auth.signInWithOAuth.mockResolvedValue({ data: { provider: 'google', url: 'https://accounts.google.com' }, error: null })
+    render(<App />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Iniciar sessão' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Continuar com Google' }))
+    await waitFor(() => expect(auth.signInWithOAuth).toHaveBeenCalled())
+    expect(auth.signInWithOAuth).toHaveBeenCalledWith({
+      provider: 'google',
+      options: { redirectTo: 'http://localhost:5173/' },
+    })
   })
   it('mostra erro de login', async () => {
     auth.getSession.mockResolvedValue({ data: { session: null }, error: null })
