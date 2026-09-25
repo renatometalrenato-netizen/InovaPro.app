@@ -151,7 +151,28 @@ export function AdminPanel({ onBack }: { onBack: () => void }) {
   }
 
   useEffect(() => {
-    void loadOverview()
+    let mounted = true
+    void (async () => {
+      try {
+        const [summaryData, handoffData] = await Promise.all([
+          invokeAdmin({ action: 'summary' }),
+          invokeAdmin({ action: 'handoffs', limit: 50 }),
+        ])
+        if (!mounted) return
+        setSummary(summaryData as Summary)
+        setHandoffs(Array.isArray(handoffData?.data) ? handoffData.data : [])
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : 'Não foi possível carregar o painel administrativo.')
+        }
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   return (
