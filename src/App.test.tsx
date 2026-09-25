@@ -11,8 +11,9 @@ const auth = vi.hoisted(() => ({
   signOut: vi.fn(),
   onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
   from: vi.fn(),
+  functionsInvoke: vi.fn(),
 }))
-vi.mock('./supabase', () => ({ supabase: { auth, from: auth.from } }))
+vi.mock('./supabase', () => ({ supabase: { auth, from: auth.from, functions: { invoke: auth.functionsInvoke } } }))
 vi.mock('./config', () => ({
   publicConfig: {
     appUrl: 'http://localhost:5173/',
@@ -26,6 +27,7 @@ describe('App', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     auth.onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
+    auth.functionsInvoke.mockResolvedValue({ data: { messages: [] }, error: null })
     auth.from.mockImplementation(() => ({
       select: vi.fn(() => ({
         eq: vi.fn(() => ({

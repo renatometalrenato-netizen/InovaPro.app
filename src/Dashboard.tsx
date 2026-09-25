@@ -10,6 +10,8 @@ import {
   Target,
   UserRound,
 } from 'lucide-react'
+import { Diagnostic360 } from './Diagnostic360'
+import { NovaChat } from './NovaChat'
 import { supabase } from './supabase'
 
 export type DashboardUser = {
@@ -37,7 +39,7 @@ type Business = {
   main_goal: string | null
 }
 
-type View = 'inicio' | 'negocio'
+type View = 'inicio' | 'negocio' | 'diagnostico' | 'nova'
 
 const stageLabels: Record<BusinessStage, string> = {
   idea: 'Ainda é uma ideia',
@@ -215,9 +217,27 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
           <button className={view === 'negocio' ? 'active' : ''} onClick={() => setView('negocio')}>
             Meu negócio
           </button>
+          <button
+            className={view === 'diagnostico' ? 'active' : ''}
+            onClick={() => business && setView('diagnostico')}
+            disabled={!business}
+          >
+            Diagnóstico 360°
+          </button>
+          <button
+            className={view === 'nova' ? 'active' : ''}
+            onClick={() => business && setView('nova')}
+            disabled={!business}
+          >
+            Nova AI
+          </button>
         </nav>
 
-        {view === 'negocio' ? (
+        {view === 'diagnostico' && business ? (
+          <Diagnostic360 userId={user.id} business={business} onBack={() => setView('inicio')} />
+        ) : view === 'nova' && business ? (
+          <NovaChat businessName={business.name} onBack={() => setView('inicio')} />
+        ) : view === 'negocio' ? (
           <section className="accountPanel">
             <div className="panelIntro">
               <span className="tag"><Building2 aria-hidden="true" /> MEU NEGÓCIO</span>
@@ -330,7 +350,9 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
                   <p>
                     A próxima etapa conecta este contexto ao atendimento da Nova AI. Nenhuma solução será empurrada sem diagnóstico.
                   </p>
-                  <span className="statusChip"><MessageCircle aria-hidden="true" /> Integração em evolução</span>
+                  <button className="link" onClick={() => business && setView('nova')} disabled={!business}>
+                    <MessageCircle aria-hidden="true" /> Conversar com a Nova AI
+                  </button>
                 </div>
               </article>
 
@@ -341,7 +363,9 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
                 <p>
                   Estratégia, Marca & Comunicação, Marketing, Vendas, Processos, Tecnologia & IA e Gestão & Crescimento.
                 </p>
-                <span className="statusChip"><CheckCircle2 aria-hidden="true" /> Estrutura de dados preparada</span>
+                <button className="link" onClick={() => business && setView('diagnostico')} disabled={!business}>
+                  <CheckCircle2 aria-hidden="true" /> Iniciar diagnóstico
+                </button>
               </article>
             </section>
           </>

@@ -1041,3 +1041,304 @@ footer > small {
     grid-template-columns: 90px 1fr;
   }
 }
+
+
+/* InovaPro 360 diagnostic */
+.diagnosticPage,
+.novaChatPage {
+  max-width: 980px;
+  margin: 0 auto;
+}
+.diagnosticHeader,
+.novaChatHeader {
+  margin-bottom: 24px;
+}
+.diagnosticHeader h1,
+.novaChatHeader h1 {
+  font-size: clamp(32px, 5vw, 54px);
+  letter-spacing: -2px;
+  margin: 12px 0;
+}
+.diagnosticHeader p,
+.novaChatHeader p {
+  color: #8fa4b9;
+  line-height: 1.7;
+  max-width: 760px;
+}
+.progressMeta {
+  display: flex;
+  justify-content: space-between;
+  color: #7f96ad;
+  font-size: 10px;
+  margin-bottom: 8px;
+}
+.progressTrack,
+.scoreTrack {
+  height: 7px;
+  background: #071522;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  overflow: hidden;
+}
+.progressTrack i,
+.scoreTrack i {
+  display: block;
+  height: 100%;
+  background: var(--grad);
+  border-radius: inherit;
+}
+.questionCard,
+.resultHero,
+.priorityCard,
+.historyBlock {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #081727;
+  padding: 26px;
+}
+.questionCard h2 {
+  font-size: clamp(24px, 4vw, 38px);
+  line-height: 1.18;
+  margin: 12px 0 24px;
+}
+.answerGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 9px;
+}
+.answerGrid button {
+  min-height: 58px;
+  border: 1px solid #193550;
+  border-radius: 14px;
+  background: #071522;
+  color: #dceafa;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 10px;
+}
+.answerGrid button:hover {
+  border-color: rgba(101, 221, 255, 0.35);
+  background: #0b2035;
+}
+.diagnosticFooter,
+.diagnosticActions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 15px;
+}
+.diagnosticNote {
+  display: block;
+  margin-top: 13px;
+  color: #617991;
+  line-height: 1.6;
+}
+.resultHero {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+}
+.scoreRing {
+  flex: 0 0 132px;
+  width: 132px;
+  height: 132px;
+  border: 1px solid rgba(101, 221, 255, 0.2);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  background: radial-gradient(circle, rgba(155,92,255,.15), transparent 62%);
+}
+.scoreRing strong {
+  font-size: 40px;
+  line-height: 1;
+}
+.scoreRing span {
+  color: #7289a0;
+  font-size: 10px;
+}
+.resultHero h2 {
+  font-size: 34px;
+  margin: 8px 0;
+}
+.resultHero p,
+.priorityCard p {
+  color: #8aa0b6;
+  line-height: 1.65;
+}
+.pillarGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.pillarGrid article {
+  border: 1px solid var(--line);
+  background: #071522;
+  border-radius: 17px;
+  padding: 16px;
+}
+.pillarGrid article > span {
+  display: block;
+  color: #8097ae;
+  font-size: 10px;
+}
+.pillarGrid article > strong {
+  display: block;
+  margin: 7px 0;
+  font-size: 24px;
+}
+.priorityCard h2 {
+  max-width: 760px;
+  line-height: 1.35;
+}
+.historyBlock {
+  margin-top: 22px;
+}
+.historyRow {
+  display: grid;
+  grid-template-columns: 110px 80px 1fr;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+  color: #879eb5;
+  font-size: 10px;
+}
+.historyRow strong {
+  color: #e8f8ff;
+}
+
+/* Nova AI web chat */
+.chatWindow {
+  min-height: 430px;
+  max-height: 58vh;
+  overflow-y: auto;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #061321;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chatLoading,
+.novaWelcome {
+  margin: auto;
+  color: #8299b0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  max-width: 560px;
+}
+.novaWelcome .infinity {
+  font-size: 74px;
+}
+.novaWelcome strong {
+  display: block;
+  color: #eff8ff;
+  margin-bottom: 5px;
+}
+.novaWelcome p {
+  margin: 0;
+  line-height: 1.65;
+  font-size: 11px;
+}
+.chatRow {
+  display: flex;
+  gap: 9px;
+  max-width: 82%;
+}
+.userMessage {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+.novaMessage {
+  align-self: flex-start;
+}
+.chatAvatar {
+  flex: 0 0 30px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  background: #0a1c30;
+  color: #65ddff;
+  font-size: 20px;
+  font-weight: 800;
+}
+.chatAvatar svg {
+  width: 15px;
+}
+.chatBubble {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 11px 13px;
+  background: #0a1a2b;
+  color: #dceafa;
+  line-height: 1.6;
+  font-size: 11px;
+  white-space: pre-wrap;
+}
+.userMessage .chatBubble {
+  background: #0d263c;
+  border-color: rgba(101, 221, 255, 0.18);
+}
+.typing {
+  color: #7f96ad;
+}
+.chatComposer {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 9px;
+  align-items: end;
+}
+.chatComposer textarea {
+  min-height: 58px;
+  resize: vertical;
+  border: 1px solid #193550;
+  border-radius: 15px;
+  background: #071522;
+  color: #eef5ff;
+  padding: 13px 14px;
+  font: inherit;
+}
+.chatComposer .primary {
+  height: 58px;
+  width: 58px;
+  padding: 0;
+}
+.appNav button:disabled,
+.link:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .answerGrid {
+    grid-template-columns: 1fr;
+  }
+  .pillarGrid {
+    grid-template-columns: 1fr;
+  }
+  .resultHero {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .historyRow {
+    grid-template-columns: 85px 65px 1fr;
+  }
+  .appNav {
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+  .appNav button {
+    white-space: nowrap;
+  }
+  .chatRow {
+    max-width: 94%;
+  }
+}
