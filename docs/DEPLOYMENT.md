@@ -50,10 +50,10 @@ Na Vercel, configure apenas valores publicáveis no frontend:
 
 Nunca adicionar ao frontend:
 
-- `service_role`
+- chaves administrativas do banco
 - tokens privados
 - chaves secretas de IA
-- credenciais administrativas
+- qualquer credencial com privilégio elevado
 
 ## Governança
 
