@@ -7,6 +7,7 @@ Atualizado em 21 de setembro de 2026.
 - Área autenticada agora carrega perfil e negócio reais do Supabase, respeitando RLS por usuário.
 - Onboarding de perfil/negócio criado sobre as tabelas existentes `profiles` e `businesses`, sem novo schema.
 - Dashboard autenticado exibe contexto do negócio, estágio, objetivo e entrada para atualização.
+- Dashboard também carrega o diagnóstico mais recente, mostra pontuação/pilar prioritário e deixa esse contexto explícito antes de abrir a Nova AI.
 - Foto e nome do provedor OAuth são aproveitados quando disponíveis nos metadados autorizados do usuário.
 
 - Boot de autenticação tolerante a falhas, com encerramento garantido do carregamento e retry.

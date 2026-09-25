@@ -41,6 +41,33 @@ type Business = {
 
 type View = 'inicio' | 'negocio' | 'diagnostico' | 'nova'
 
+type DiagnosticPillar =
+  | 'strategy'
+  | 'brand_communication'
+  | 'marketing'
+  | 'sales'
+  | 'processes'
+  | 'technology_ai'
+  | 'management_growth'
+
+type LatestDiagnostic = {
+  id: string
+  overall_score: number
+  primary_pillar: DiagnosticPillar
+  summary: string | null
+  created_at: string
+}
+
+const diagnosticPillarLabels: Record<DiagnosticPillar, string> = {
+  strategy: 'Estratégia',
+  brand_communication: 'Marca & Comunicação',
+  marketing: 'Marketing',
+  sales: 'Vendas',
+  processes: 'Processos',
+  technology_ai: 'Tecnologia & IA',
+  management_growth: 'Gestão & Crescimento',
+}
+
 const stageLabels: Record<BusinessStage, string> = {
   idea: 'Ainda é uma ideia',
   starting: 'Estou começando',
@@ -61,6 +88,7 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
   const [view, setView] = useState<View>('inicio')
   const [profile, setProfile] = useState<Profile | null>(null)
   const [business, setBusiness] = useState<Business | null>(null)
+  const [latestDiagnostic, setLatestDiagnostic] = useState<LatestDiagnostic | null>(null)
   const [fullName, setFullName] = useState(user.fullName ?? '')
   const [phone, setPhone] = useState('')
   const [businessName, setBusinessName] = useState('')
@@ -96,12 +124,27 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
         ])
         if (profileResult.error) throw profileResult.error
         if (businessResult.error) throw businessResult.error
-        if (!mounted) return
-
         const loadedProfile = profileResult.data as Profile | null
         const loadedBusiness = businessResult.data as Business | null
+        let loadedDiagnostic: LatestDiagnostic | null = null
+
+        if (loadedBusiness?.id) {
+          const diagnosticResult = await supabase
+            .from('business_diagnostics')
+            .select('id, overall_score, primary_pillar, summary, created_at')
+            .eq('business_id', loadedBusiness.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle()
+
+          if (diagnosticResult.error) throw diagnosticResult.error
+          loadedDiagnostic = diagnosticResult.data as LatestDiagnostic | null
+        }
+
+        if (!mounted) return
         setProfile(loadedProfile)
         setBusiness(loadedBusiness)
+        setLatestDiagnostic(loadedDiagnostic)
         setFullName(loadedProfile?.full_name ?? user.fullName ?? '')
         setPhone(loadedProfile?.phone ?? '')
         setBusinessName(loadedBusiness?.name ?? '')
@@ -348,7 +391,9 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
                   <span className="tag">NOVA AI</span>
                   <h2>Vamos entender antes de recomendar.</h2>
                   <p>
-                    A próxima etapa conecta este contexto ao atendimento da Nova AI. Nenhuma solução será empurrada sem diagnóstico.
+                    {latestDiagnostic
+                      ? <>Seu negócio e o diagnóstico mais recente já fazem parte do contexto da Nova. Ela pode continuar sem recomeçar do zero.</>
+                      : <>Seu negócio já está no contexto da Nova. Faça o Diagnóstico 360° para aprofundar a análise antes de qualquer recomendação.</>}
                   </p>
                   <button className="link" onClick={() => business && setView('nova')} disabled={!business}>
                     <MessageCircle aria-hidden="true" /> Conversar com a Nova AI
@@ -358,14 +403,35 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
 
               <article className="nextStepCard">
                 <Target aria-hidden="true" />
-                <span className="tag">PRÓXIMO PASSO</span>
-                <h2>Diagnóstico InovaPro 360°</h2>
-                <p>
-                  Estratégia, Marca & Comunicação, Marketing, Vendas, Processos, Tecnologia & IA e Gestão & Crescimento.
-                </p>
-                <button className="link" onClick={() => business && setView('diagnostico')} disabled={!business}>
-                  <CheckCircle2 aria-hidden="true" /> Iniciar diagnóstico
-                </button>
+                <span className="tag">{latestDiagnostic ? 'ÚLTIMO DIAGNÓSTICO' : 'PRÓXIMO PASSO'}</span>
+                {latestDiagnostic ? (
+                  <>
+                    <div className="dashboardDiagnostic">
+                      <strong>{latestDiagnostic.overall_score}<small>/100</small></strong>
+                      <div>
+                        <span>Prioridade atual</span>
+                        <h2>{diagnosticPillarLabels[latestDiagnostic.primary_pillar]}</h2>
+                        <p>{latestDiagnostic.summary || 'Resultado salvo e disponível como contexto para a Nova AI.'}</p>
+                        <small>
+                          Atualizado em {new Date(latestDiagnostic.created_at).toLocaleDateString('pt-BR')}
+                        </small>
+                      </div>
+                    </div>
+                    <button className="link" onClick={() => setView('diagnostico')}>
+                      <CheckCircle2 aria-hidden="true" /> Abrir resultado
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <h2>Diagnóstico InovaPro 360°</h2>
+                    <p>
+                      Estratégia, Marca & Comunicação, Marketing, Vendas, Processos, Tecnologia & IA e Gestão & Crescimento.
+                    </p>
+                    <button className="link" onClick={() => business && setView('diagnostico')} disabled={!business}>
+                      <CheckCircle2 aria-hidden="true" /> Iniciar diagnóstico
+                    </button>
+                  </>
+                )}
               </article>
             </section>
           </>

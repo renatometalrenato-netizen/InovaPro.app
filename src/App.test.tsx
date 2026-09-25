@@ -28,18 +28,25 @@ describe('App', () => {
     vi.clearAllMocks()
     auth.onAuthStateChange.mockReturnValue({ data: { subscription: { unsubscribe: vi.fn() } } })
     auth.functionsInvoke.mockResolvedValue({ data: { messages: [] }, error: null })
-    auth.from.mockImplementation(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+    auth.from.mockImplementation(() => {
+      const query = {
+        eq: vi.fn(),
+        order: vi.fn(),
+        limit: vi.fn(),
+        maybeSingle: vi.fn().mockResolvedValue({ data: null, error: null }),
+      }
+      query.eq.mockReturnValue(query)
+      query.order.mockReturnValue(query)
+      query.limit.mockReturnValue(query)
+      return {
+        select: vi.fn(() => query),
+        upsert: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn().mockResolvedValue({ data: null, error: null }),
+          })),
         })),
-      })),
-      upsert: vi.fn(() => ({
-        select: vi.fn(() => ({
-          single: vi.fn().mockResolvedValue({ data: null, error: null }),
-        })),
-      })),
-    }))
+      }
+    })
     window.history.replaceState({}, '', '/InovaPro.app/')
   })
   it('encerra o boot sem sessão', async () => {

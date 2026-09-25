@@ -1342,3 +1342,44 @@ footer > small {
     max-width: 94%;
   }
 }
+
+
+.dashboardDiagnostic {
+  display: flex;
+  align-items: flex-start;
+  gap: 22px;
+  margin: 14px 0 8px;
+}
+.dashboardDiagnostic > strong {
+  flex: 0 0 92px;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  border: 1px solid rgba(101, 221, 255, 0.2);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  background: radial-gradient(circle, rgba(155, 92, 255, 0.15), transparent 65%);
+  font-size: 30px;
+}
+.dashboardDiagnostic > strong small {
+  display: block;
+  color: #7189a0;
+  font-size: 8px;
+}
+.dashboardDiagnostic > div > span,
+.dashboardDiagnostic > div > small {
+  color: #6f879e;
+  font-size: 9px;
+}
+.dashboardDiagnostic h2 {
+  margin: 4px 0 7px;
+}
+.dashboardDiagnostic p {
+  margin: 0 0 8px;
+}
+@media (max-width: 600px) {
+  .dashboardDiagnostic {
+    flex-direction: column;
+  }
+}
