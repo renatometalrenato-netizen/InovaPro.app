@@ -14,7 +14,8 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run"
+    "test": "vitest run",
+    "build:vercel": "tsc && vite build --base=/"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",
