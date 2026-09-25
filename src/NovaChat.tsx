@@ -24,29 +24,33 @@ export function NovaChat({
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    void loadHistory()
+    let mounted = true
+    void (async () => {
+      setLoading(true)
+      setError('')
+      const { data, error } = await supabase.functions.invoke('nova-ai-web-chat', {
+        body: { action: 'history' },
+      })
+
+      if (!mounted) return
+      setLoading(false)
+      if (error) {
+        setError('Não foi possível carregar a conversa da Nova AI.')
+        return
+      }
+
+      const history = Array.isArray(data?.messages) ? data.messages : []
+      setMessages(history)
+    })()
+
+    return () => {
+      mounted = false
+    }
   }, [])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, sending])
-
-  async function loadHistory() {
-    setLoading(true)
-    setError('')
-    const { data, error } = await supabase.functions.invoke('nova-ai-web-chat', {
-      body: { action: 'history' },
-    })
-
-    setLoading(false)
-    if (error) {
-      setError('Não foi possível carregar a conversa da Nova AI.')
-      return
-    }
-
-    const history = Array.isArray(data?.messages) ? data.messages : []
-    setMessages(history)
-  }
 
   async function send(e: FormEvent) {
     e.preventDefault()
