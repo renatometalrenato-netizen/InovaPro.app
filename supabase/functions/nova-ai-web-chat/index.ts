@@ -1,18 +1,18 @@
 import { createClient } from "npm:@supabase/supabase-js@2";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
-const secretKeysRaw = Deno.env.get("SUPABASE_SECRET_KEYS");
-let serviceRole = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
-if (!serviceRole && secretKeysRaw) {
+const secretKeysRaw = Deno.env.get("SUPABASE_SECRET_KEYS") ?? "";
+let adminKey = "";
+if (secretKeysRaw) {
   try {
     const parsed = JSON.parse(secretKeysRaw);
-    serviceRole = String(parsed.default || Object.values(parsed)[0] || "");
+    adminKey = String(parsed.default || Object.values(parsed)[0] || "");
   } catch {
-    serviceRole = "";
+    adminKey = secretKeysRaw;
   }
 }
 
-const admin = createClient(SUPABASE_URL, serviceRole, {
+const admin = createClient(SUPABASE_URL, adminKey, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
 
@@ -401,6 +401,24 @@ Deno.serve(async (req: Request) => {
       .from("nova_conversations")
       .update({ last_message_at: new Date().toISOString(), updated_at: new Date().toISOString() })
       .eq("id", conversation.id);
+
+    if (conversation.ai_enabled === false || conversation.handoff_status === "HUMAN_REQUESTED") {
+      const reply =
+        "Seu atendimento já foi encaminhado para a equipe. Vou manter o contexto salvo para você não precisar repetir tudo.";
+      await admin.from("nova_messages").insert({
+        conversation_id: conversation.id,
+        channel: "web",
+        provider: "web",
+        direction: "outbound",
+        sender_external_id: "nova-ai",
+        content_type: "text",
+        body: reply,
+        role: "ASSISTANT",
+        delivery_status: "delivered",
+        payload: { source: "nova-ai-web-chat", handoff_active: true },
+      });
+      return json({ ok: true, reply, handoff: true, provider: "handoff" });
+    }
 
     if (detectHandoff(message)) {
       await openHandoff(contact.id, conversation.id, context, message);
