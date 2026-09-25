@@ -436,6 +436,22 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
       first?.focus()
     }
   }
+  async function signInWithGoogle() {
+    setLoading(true)
+    setMessage('')
+    setError('')
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: publicConfig.appUrl },
+      })
+      if (error) throw error
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Não foi possível entrar com o Google.')
+      setLoading(false)
+    }
+  }
+
   async function submit(e: FormEvent) {
     e.preventDefault()
     setLoading(true)
@@ -496,6 +512,18 @@ function Auth({ mode, close }: { mode: AuthMode; close: () => void }) {
         <h2 id="auth-title">
           {mode === 'login' ? 'Bem-vindo de volta.' : 'Comece sua jornada na InovaPro.'}
         </h2>
+        <button
+          type="button"
+          className="oauth"
+          onClick={signInWithGoogle}
+          disabled={loading}
+        >
+          <span aria-hidden="true">G</span>
+          Continuar com Google
+        </button>
+        <div className="authDivider" aria-hidden="true">
+          <span>ou</span>
+        </div>
         {mode === 'signup' && (
           <input
             aria-label="Nome"
