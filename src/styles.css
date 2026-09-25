@@ -1655,3 +1655,16 @@ footer > small {
     grid-template-columns: 1fr;
   }
 }
+
+
+.adminToolbarActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+@media (max-width: 600px) {
+  .adminToolbarActions {
+    justify-content: flex-start;
+  }
+}

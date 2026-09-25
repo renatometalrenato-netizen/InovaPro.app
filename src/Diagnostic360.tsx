@@ -93,6 +93,39 @@ const recommendations: Record<PillarId, { priority: string; next: string }> = {
   },
 }
 
+function draftKey(businessId?: string) {
+  return businessId ? `inovapro:diagnostic360:${businessId}` : ''
+}
+
+function readDraft(businessId?: string) {
+  const key = draftKey(businessId)
+  if (!key || typeof window === 'undefined') return { answers: {} as Record<string, number>, index: 0 }
+  try {
+    const raw = window.localStorage.getItem(key)
+    if (!raw) return { answers: {} as Record<string, number>, index: 0 }
+    const parsed = JSON.parse(raw) as { answers?: Record<string, number>; index?: number }
+    const answers = parsed.answers && typeof parsed.answers === 'object' ? parsed.answers : {}
+    const index = Number.isInteger(parsed.index)
+      ? Math.min(Math.max(Number(parsed.index), 0), questions.length - 1)
+      : 0
+    return { answers, index }
+  } catch {
+    return { answers: {} as Record<string, number>, index: 0 }
+  }
+}
+
+function writeDraft(businessId: string | undefined, answers: Record<string, number>, index: number) {
+  const key = draftKey(businessId)
+  if (!key || typeof window === 'undefined') return
+  window.localStorage.setItem(key, JSON.stringify({ answers, index }))
+}
+
+function clearDraft(businessId?: string) {
+  const key = draftKey(businessId)
+  if (!key || typeof window === 'undefined') return
+  window.localStorage.removeItem(key)
+}
+
 function calculate(answers: Record<string, number>) {
   const grouped = Object.keys(pillarLabels).reduce(
     (acc, key) => ({ ...acc, [key]: [] as number[] }),
@@ -128,8 +161,9 @@ export function Diagnostic360({
   business: BusinessRef
   onBack: () => void
 }) {
-  const [answers, setAnswers] = useState<Record<string, number>>({})
-  const [index, setIndex] = useState(0)
+  const initialDraft = useMemo(() => readDraft(business.id), [business.id])
+  const [answers, setAnswers] = useState<Record<string, number>>(() => initialDraft.answers)
+  const [index, setIndex] = useState(() => initialDraft.index)
   const [result, setResult] = useState<DiagnosticRecord | null>(null)
   const [history, setHistory] = useState<DiagnosticRecord[]>([])
   const [saving, setSaving] = useState(false)
@@ -159,8 +193,16 @@ export function Diagnostic360({
 
   function answer(value: number) {
     const nextAnswers = { ...answers, [current.id]: value }
+    const nextIndex = index < questions.length - 1 ? index + 1 : index
     setAnswers(nextAnswers)
-    if (index < questions.length - 1) setIndex(index + 1)
+    if (nextIndex !== index) setIndex(nextIndex)
+    writeDraft(business.id, nextAnswers, nextIndex)
+  }
+
+  function previousQuestion() {
+    const nextIndex = Math.max(0, index - 1)
+    setIndex(nextIndex)
+    writeDraft(business.id, answers, nextIndex)
   }
 
   async function finish() {
@@ -198,11 +240,13 @@ export function Diagnostic360({
     }
 
     const row = data as DiagnosticRecord
+    clearDraft(business.id)
     setResult(row)
     setHistory((previous) => [row, ...previous].slice(0, 3))
   }
 
   function restart() {
+    clearDraft(business.id)
     setAnswers({})
     setIndex(0)
     setResult(null)
@@ -304,7 +348,7 @@ export function Diagnostic360({
         <button
           className="secondary"
           disabled={index === 0}
-          onClick={() => setIndex((value) => Math.max(0, value - 1))}
+          onClick={previousQuestion}
         >
           <ArrowLeft aria-hidden="true" /> Anterior
         </button>
