@@ -423,6 +423,49 @@ footer > small {
   background: #061321;
   color: #fff;
 }
+.oauth {
+  width: 100%;
+  min-height: 46px;
+  margin: 4px 0 10px;
+  border: 1px solid #24415f;
+  border-radius: 13px;
+  background: #0b1b2e;
+  color: #eef5ff;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.oauth > span {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eef5ff;
+  color: #07111f;
+  font-weight: 800;
+}
+.oauth:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #607991;
+  font-size: 9px;
+  margin: 0 0 8px;
+}
+.authDivider::before,
+.authDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
 .x {
   position: absolute;
   right: 17px;
