@@ -128,7 +128,27 @@ export function WhatsAppConnection({ onBack }: { onBack: () => void }) {
   }
 
   useEffect(() => {
-    void refreshStatus()
+    let mounted = true
+
+    void (async () => {
+      try {
+        const data = await invokeOnboarding({ action: 'status' })
+        if (!mounted) return
+        setStatus({
+          connected: Boolean(data?.connected),
+          phone: data?.phone ?? null,
+          verified_name: data?.verified_name ?? null,
+          status: data?.status ?? null,
+          connected_at: data?.connected_at ?? null,
+        })
+      } catch (err) {
+        if (mounted) {
+          setError(err instanceof Error ? err.message : 'Não foi possível consultar a conexão.')
+        }
+      } finally {
+        if (mounted) setLoading(false)
+      }
+    })()
 
     const receiveMessage = (event: MessageEvent) => {
       if (event.origin !== 'https://www.facebook.com' && event.origin !== 'https://web.facebook.com') {
@@ -156,7 +176,10 @@ export function WhatsAppConnection({ onBack }: { onBack: () => void }) {
     }
 
     window.addEventListener('message', receiveMessage)
-    return () => window.removeEventListener('message', receiveMessage)
+    return () => {
+      mounted = false
+      window.removeEventListener('message', receiveMessage)
+    }
   }, [])
 
   async function connect() {
