@@ -33,6 +33,24 @@ function cleanText(value: unknown, max = 6000) {
   return typeof value === "string" ? value.trim().slice(0, max) : "";
 }
 
+function normalizeEmail(value: unknown) {
+  const email = cleanText(value, 320).toLowerCase();
+  return email || null;
+}
+
+function normalizePhone(value: unknown) {
+  const raw = cleanText(value, 64);
+  if (!raw) return null;
+  const digits = raw.replace(/\D/g, "");
+  if (!digits) return null;
+
+  // Brasil: salva/consulta em E.164 sempre que houver DDD + número.
+  if (digits.startsWith("55") && digits.length >= 12) return "+" + digits;
+  if (digits.length === 10 || digits.length === 11) return "+55" + digits;
+
+  return raw.startsWith("+") ? "+" + digits : digits;
+}
+
 async function getUser(req: Request) {
   const auth = req.headers.get("authorization") || "";
   const token = auth.replace(/^Bearer\s+/i, "");
@@ -69,13 +87,19 @@ async function getContext(userId: string) {
 
 async function resolveContact(user: any, context: any) {
   const externalUserId = String(user.id);
-  const { data: identity } = await admin
+  const email = normalizeEmail(user.email);
+  const phone = normalizePhone(context.profile?.phone || user.user_metadata?.phone);
+
+  // 1) Regra mais forte: identidade já vinculada ao usuário autenticado do app.
+  const { data: identity, error: identityLookupError } = await admin
     .from("nova_channel_identities")
     .select("contact_id")
     .eq("provider", "web")
     .eq("channel", "web")
     .eq("external_user_id", externalUserId)
     .maybeSingle();
+
+  if (identityLookupError) throw identityLookupError;
 
   if (identity?.contact_id) {
     const { data, error } = await admin
@@ -87,36 +111,110 @@ async function resolveContact(user: any, context: any) {
     return data;
   }
 
-  const displayName =
-    context.profile?.full_name ||
-    user.user_metadata?.full_name ||
-    user.user_metadata?.name ||
-    user.email ||
-    null;
+  // 2) Reconciliação de alta confiança para impedir duplicidade entre
+  // WhatsApp/Instagram e o InovaPro.app. Nunca mesclar por nome ou empresa.
+  const candidateIds = new Set<string>();
 
-  const { data: contact, error } = await admin
-    .from("nova_contacts")
-    .insert({
-      display_name: displayName,
-      email: user.email ?? null,
-      company: context.business?.name ?? null,
-      segment: context.business?.segment ?? null,
-      city: context.business?.city ?? null,
+  if (email) {
+    const { data, error } = await admin
+      .from("nova_contacts")
+      .select("id")
+      .eq("email", email)
+      .limit(2);
+    if (error) throw error;
+    for (const row of data || []) candidateIds.add(String(row.id));
+  }
+
+  if (phone) {
+    const { data, error } = await admin
+      .from("nova_contacts")
+      .select("id")
+      .eq("phone_e164", phone)
+      .limit(2);
+    if (error) throw error;
+    for (const row of data || []) candidateIds.add(String(row.id));
+  }
+
+  let contact: any = null;
+
+  // Só faz merge automático quando existe exatamente um contato possível.
+  // Se e-mail e telefone apontarem para contatos diferentes, cria novo registro
+  // e deixa o conflito para revisão humana em vez de unir pessoas por engano.
+  if (candidateIds.size === 1) {
+    const contactId = Array.from(candidateIds)[0];
+    const { data, error } = await admin
+      .from("nova_contacts")
+      .select("*")
+      .eq("id", contactId)
+      .single();
+    if (error) throw error;
+    contact = data;
+
+    const patch: Record<string, unknown> = {
       last_interaction_at: new Date().toISOString(),
-      metadata: { app_user_id: user.id, source: "inovapro_app" },
-    })
-    .select("*")
-    .single();
+    };
+    if (!contact.email && email) patch.email = email;
+    if (!contact.phone_e164 && phone) patch.phone_e164 = phone;
+    if (!contact.company && context.business?.name) patch.company = context.business.name;
+    if (!contact.segment && context.business?.segment) patch.segment = context.business.segment;
+    if (!contact.city && context.business?.city) patch.city = context.business.city;
 
-  if (error) throw error;
+    if (Object.keys(patch).length > 1) {
+      const { data: updated, error: updateError } = await admin
+        .from("nova_contacts")
+        .update(patch)
+        .eq("id", contact.id)
+        .select("*")
+        .single();
+      if (updateError) throw updateError;
+      contact = updated;
+    }
+  }
 
+  if (!contact) {
+    const displayName =
+      context.profile?.full_name ||
+      user.user_metadata?.full_name ||
+      user.user_metadata?.name ||
+      user.email ||
+      null;
+
+    const { data, error } = await admin
+      .from("nova_contacts")
+      .insert({
+        display_name: displayName,
+        email,
+        phone_e164: phone,
+        company: context.business?.name ?? null,
+        segment: context.business?.segment ?? null,
+        city: context.business?.city ?? null,
+        last_interaction_at: new Date().toISOString(),
+        metadata: {
+          app_user_id: user.id,
+          source: "inovapro_app",
+          identity_conflict: candidateIds.size > 1,
+          candidate_contact_ids: candidateIds.size > 1 ? Array.from(candidateIds) : undefined,
+        },
+      })
+      .select("*")
+      .single();
+
+    if (error) throw error;
+    contact = data;
+  }
+
+  // 3) Vincula a conta do app ao contato consolidado. A partir daqui,
+  // futuras conversas do app retornam sempre ao mesmo contact_id.
   const { error: identityError } = await admin.from("nova_channel_identities").upsert(
     {
       contact_id: contact.id,
       provider: "web",
       channel: "web",
       external_user_id: externalUserId,
-      metadata: { source: "inovapro_app" },
+      metadata: {
+        source: "inovapro_app",
+        matched_by: candidateIds.size === 1 ? (phone && email ? "phone_or_email" : phone ? "phone" : "email") : "new_contact",
+      },
       updated_at: new Date().toISOString(),
     },
     { onConflict: "provider,channel,external_user_id" },
