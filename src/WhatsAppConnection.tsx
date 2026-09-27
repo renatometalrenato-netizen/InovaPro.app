@@ -23,6 +23,15 @@ type EmbeddedSession = {
   phone_number_id?: string
 }
 
+type EmbeddedSignupMessage = {
+  type?: string
+  event?: string
+  data?: {
+    waba_id?: string | number
+    phone_number_id?: string | number
+  }
+}
+
 type FacebookLoginResponse = {
   authResponse?: {
     code?: string
@@ -126,17 +135,19 @@ export function WhatsAppConnection({ onBack }: { onBack: () => void }) {
         return
       }
 
-      let data: any = event.data
-      if (typeof data === 'string') {
+      let parsed: unknown = event.data
+      if (typeof parsed === 'string') {
         try {
-          data = JSON.parse(data)
+          parsed = JSON.parse(parsed)
         } catch {
           return
         }
       }
 
-      if (data?.type !== 'WA_EMBEDDED_SIGNUP') return
-      if (data?.event === 'FINISH' && data?.data) {
+      if (!parsed || typeof parsed !== 'object') return
+      const data = parsed as EmbeddedSignupMessage
+      if (data.type !== 'WA_EMBEDDED_SIGNUP') return
+      if (data.event === 'FINISH' && data.data) {
         sessionInfo.current = {
           waba_id: data.data.waba_id ? String(data.data.waba_id) : undefined,
           phone_number_id: data.data.phone_number_id ? String(data.data.phone_number_id) : undefined,
