@@ -14,6 +14,7 @@ import { AdminPanel } from './AdminPanel'
 import { Diagnostic360 } from './Diagnostic360'
 import { NovaChat } from './NovaChat'
 import { supabase } from './supabase'
+import { WhatsAppConnection } from './WhatsAppConnection'
 
 export type DashboardUser = {
   id: string
@@ -40,7 +41,7 @@ type Business = {
   main_goal: string | null
 }
 
-type View = 'inicio' | 'negocio' | 'diagnostico' | 'nova' | 'admin'
+type View = 'inicio' | 'negocio' | 'diagnostico' | 'nova' | 'integracoes' | 'admin'
 
 type DiagnosticPillar =
   | 'strategy'
@@ -290,6 +291,12 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
           >
             Nova AI
           </button>
+          <button
+            className={view === 'integracoes' ? 'active' : ''}
+            onClick={() => setView('integracoes')}
+          >
+            Integrações
+          </button>
           {adminEnabled && (
             <button className={view === 'admin' ? 'active' : ''} onClick={() => setView('admin')}>
               Operação
@@ -299,6 +306,8 @@ export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => voi
 
         {view === 'admin' && adminEnabled ? (
           <AdminPanel onBack={() => setView('inicio')} />
+        ) : view === 'integracoes' ? (
+          <WhatsAppConnection onBack={() => setView('inicio')} />
         ) : view === 'diagnostico' && business ? (
           <Diagnostic360 userId={user.id} business={business} onBack={() => setView('inicio')} />
         ) : view === 'nova' && business ? (
