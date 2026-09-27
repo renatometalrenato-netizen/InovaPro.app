@@ -781,7 +781,10 @@ function mapSessionUser(user: User): SessionUser {
 
 function WebsiteApp() {
   const [section, setSection] = useState<Section>('inicio')
-  const [auth, setAuth] = useState<null | AuthMode>(null)
+  const [auth, setAuth] = useState<null | AuthMode>(() => {
+    const requested = new URLSearchParams(window.location.search).get('auth')
+    return requested === 'login' || requested === 'signup' ? requested : null
+  })
   const [user, setUser] = useState<SessionUser | null>(null)
   const [checking, setChecking] = useState(true)
   const [sessionError, setSessionError] = useState(false)
