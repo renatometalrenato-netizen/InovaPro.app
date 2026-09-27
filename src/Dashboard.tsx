@@ -87,7 +87,10 @@ function initials(name?: string, email?: string) {
 }
 
 export function Dashboard({ user, exit }: { user: DashboardUser; exit: () => void }) {
-  const [view, setView] = useState<View>('inicio')
+  const [view, setView] = useState<View>(() => {
+    const requested = new URLSearchParams(window.location.search).get('open')
+    return requested === 'integracoes' ? 'integracoes' : 'inicio'
+  })
   const [profile, setProfile] = useState<Profile | null>(null)
   const [business, setBusiness] = useState<Business | null>(null)
   const [latestDiagnostic, setLatestDiagnostic] = useState<LatestDiagnostic | null>(null)
